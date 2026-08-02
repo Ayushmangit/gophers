@@ -1,0 +1,40 @@
+{{define "subject"}}Finish Registration with GopherSocial{{end}}
+
+{{define "body"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Verify your email</title>
+</head>
+<body>
+
+	<p>Hi {{.Username}},</p>
+
+	<p>Thanks for signing up for GopherSocial. We're excited to have you on board!</p>
+
+	<p>
+		Before you can start using GopherSocial, you'll need to verify your email
+		address by clicking the link below:
+	</p>
+
+	<p>
+		<a href="{{.ActivationURL}}">Verify your email</a>
+	</p>
+
+	<p>
+		If the button doesn't work, copy and paste the following URL into your browser:
+	</p>
+
+	<p>{{.ActivationURL}}</p>
+
+	<p>
+		If you didn't create a GopherSocial account, you can safely ignore this email.
+	</p>
+
+	<p>Thanks,<br>Team GopherSocial</p>
+
+</body>
+</html>
+{{end}}
