@@ -30,7 +30,7 @@ func (m *SendGridMailer) Send(templateFile, username, email string, data any, is
 	from := mail.NewEmail(FromName, m.fromEmail)
 	to := mail.NewEmail(username, email)
 
-	//template parsing
+	//NOTE:Template parsing
 	tmpl, err := template.ParseFS(FS, "templates/"+templateFile)
 	if err != nil {
 		return err

@@ -1,3 +1,4 @@
+// NOTE: TX: exported Methods return a TX and private methods consume them
 package store
 
 import (

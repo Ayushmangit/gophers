@@ -1,3 +1,4 @@
+// NOTE: This is how we do custom json wrapping and validation
 package main
 
 import (

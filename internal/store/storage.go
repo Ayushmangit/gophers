@@ -53,6 +53,8 @@ func NewStorage(db *sql.DB) Storage {
 	}
 }
 
+// NOTE: custom transaction wrapper 1.Begin 2.Rollback if err 3.commit
+// NOTE: Tx are used to implement the SAGA pattern
 func withTx(db *sql.DB, ctx context.Context, fn func(*sql.Tx) error) error {
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {

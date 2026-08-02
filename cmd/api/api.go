@@ -14,13 +14,13 @@ import (
 	"go.uber.org/zap"
 )
 
+// NOTE: Application is the entry point for the program
 type application struct {
 	config config
 	store  store.Storage
 	logger *zap.SugaredLogger //slower but more info logger
 	mailer mailer.Client
 }
-
 type dbConfig struct {
 	addr         string
 	maxOpenConns int
@@ -37,6 +37,7 @@ type config struct {
 	mail        mailConfig
 }
 
+// NOTE: Mailer config
 type mailConfig struct {
 	sendGrid  sendGridConfig
 	fromEmail string
@@ -99,7 +100,7 @@ func (app *application) mount() http.Handler {
 }
 
 func (app *application) run(mux http.Handler) error {
-	//Docs
+	//NOTE: swagger docs
 	docs.SwaggerInfo.Version = version
 	docs.SwaggerInfo.Host = app.config.apiURL
 	docs.SwaggerInfo.BasePath = "/v1"

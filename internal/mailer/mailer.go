@@ -8,6 +8,8 @@ const (
 	UserWelcomeTemplate = "user_invitation.tmpl"
 )
 
+// NOTE: this is how to user the File system for the mailer
+//
 //go:embed "templates"
 var FS embed.FS
 
