@@ -97,7 +97,6 @@ func (app *application) followUserHandler(w http.ResponseWriter, r *http.Request
 func (app *application) unfollowUserHandler(w http.ResponseWriter, r *http.Request) {
 	unfollowedUser := getUserFromCtx(r)
 	ctx := r.Context()
-
 	//TODO: revert back to user id from ctx
 	var payload FollowUser
 
