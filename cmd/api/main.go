@@ -3,6 +3,7 @@ package main
 import (
 	"time"
 
+	"github.com/Ayushmangit/social/internal/auth"
 	"github.com/Ayushmangit/social/internal/db"
 	"github.com/Ayushmangit/social/internal/env"
 	"github.com/Ayushmangit/social/internal/mailer"
@@ -54,6 +55,12 @@ func main() {
 				user:     env.GetString("AUTH_BASIC_USERNAME", "admin"),
 				password: env.GetString("AUTH_BASIC_PASSWORD", "admin"),
 			},
+			token: tokenConfig{
+				secret: env.GetString("JWT_SECRET", "asdhpasdhfgljkdshfjashdf"),
+				exp:    time.Hour * 24 * 3, //3 days,
+				iss:    env.GetString("TOKEN_HOST", "Gophersocial"),
+				aud:    env.GetString("TOKEN_HOST", "Gophersocial"),
+			},
 		},
 	}
 
@@ -71,11 +78,13 @@ func main() {
 	store := store.NewStorage(db)
 	//NOTE: mailer consume
 	mailer := mailer.NewSendGridMailer(cfg.mail.sendGrid.apiKey, cfg.mail.fromEmail)
+	jwtAuthenticator := auth.NewJWTAuthenticator(cfg.auth.token.secret, cfg.auth.token.aud, cfg.auth.token.iss)
 	app := &application{
-		config: cfg,
-		store:  store,
-		logger: logger,
-		mailer: mailer,
+		config:        cfg,
+		store:         store,
+		logger:        logger,
+		mailer:        mailer,
+		authenticator: jwtAuthenticator,
 	}
 
 	mux := app.mount()
