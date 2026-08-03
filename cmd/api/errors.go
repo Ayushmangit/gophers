@@ -4,6 +4,17 @@ import (
 	"net/http"
 )
 
+func (app *application) UnAuthorizedBasicError(w http.ResponseWriter, r *http.Request, err error) {
+	app.logger.Errorw("unauthorized basic error", "method", r.Method, "path", r.URL.Path, "error", err.Error())
+	w.Header().Set("WWW-Authenticate", `Basic realm="restricted",charset="UTF-8"`)
+	WriteJsonError(w, http.StatusUnauthorized, "unauthorized")
+}
+
+func (app *application) UnAuthorized(w http.ResponseWriter, r *http.Request, err error) {
+	app.logger.Errorw("unauthorized error", "method", r.Method, "path", r.URL.Path, "error", err.Error())
+	WriteJsonError(w, http.StatusUnauthorized, "unauthorized")
+}
+
 func (app *application) InternalServerError(w http.ResponseWriter, r *http.Request, err error) {
 	app.logger.Errorw("internal error", "method", r.Method, "path", r.URL.Path, "error", err.Error())
 	WriteJsonError(w, http.StatusInternalServerError, "the server encountered a problem")

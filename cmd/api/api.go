@@ -19,7 +19,7 @@ import (
 type application struct {
 	config config
 	store  store.Storage
-	logger *zap.SugaredLogger //slower but more info logger
+	logger *zap.SugaredLogger
 	mailer mailer.Client
 }
 type dbConfig struct {
@@ -36,6 +36,15 @@ type config struct {
 	apiURL      string
 	frontendURL string
 	mail        mailConfig
+	auth        authConfig
+}
+
+type authConfig struct {
+	basic basicConfig
+}
+type basicConfig struct {
+	user     string
+	password string
 }
 
 // NOTE: Mailer config
@@ -65,7 +74,8 @@ func (app *application) mount() http.Handler {
 	r.Use(middleware.Timeout(time.Second * 60))
 
 	r.Route("/v1", func(r chi.Router) {
-		r.Get("/health", app.healthCheckHandler)
+		//NOTE: consume the auth middleware like this
+		r.With(app.BasicAuthMiddleware()).Get("/health", app.healthCheckHandler)
 
 		docsURL := fmt.Sprintf("%s/swagger/doc.json", app.config.addr)
 		r.Get("/swagger/*", httpSwagger.Handler(
