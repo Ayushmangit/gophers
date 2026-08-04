@@ -44,7 +44,7 @@ func (app *application) getUserHandler(w http.ResponseWriter, r *http.Request) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			userID	path	int	true	"user ID"
-//	@Success		204		"user Followed"
+//	@Success		204		"followed"
 //	@Failure		404		{object}	error
 //	@Security		ApiKeyAuth
 //	@Router			/users/{userID}/follow [put]
@@ -67,7 +67,7 @@ func (app *application) followUserHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	if err := app.jsonResponse(w, http.StatusOK, nil); err != nil {
+	if err := app.jsonResponse(w, http.StatusNoContent, ""); err != nil {
 		app.InternalServerError(w, r, err)
 		return
 	}
@@ -99,7 +99,7 @@ func (app *application) unfollowUserHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	if err := app.jsonResponse(w, http.StatusOK, nil); err != nil {
+	if err := app.jsonResponse(w, http.StatusNoContent, ""); err != nil {
 		app.InternalServerError(w, r, err)
 		return
 	}
