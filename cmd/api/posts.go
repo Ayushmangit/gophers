@@ -45,17 +45,16 @@ func (app *application) createPostHandler(w http.ResponseWriter, r *http.Request
 		app.BadRequest(w, r, err)
 		return
 	}
-	userId := int64(1)
+
+	ctx := r.Context()
+	user := getUserFromCtx(r)
 
 	post := &store.Post{
 		Title:   payload.Title,
 		Content: payload.Content,
 		Tags:    payload.Tags,
-		//TODO: change after auth
-		UserID: userId,
+		UserID:  user.ID,
 	}
-
-	ctx := r.Context()
 	if err := app.store.Posts.Create(ctx, post); err != nil {
 		app.InternalServerError(w, r, err)
 		return

@@ -40,9 +40,6 @@ type Storage struct {
 		Follow(ctx context.Context, followerID, userID int64) error
 		UnFollow(ctx context.Context, followerID, userID int64) error
 	}
-	Authentication interface {
-		RegisterUser(context.Context, *User) error
-	}
 }
 
 func NewStorage(db *sql.DB) Storage {
