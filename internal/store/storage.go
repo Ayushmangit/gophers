@@ -37,8 +37,8 @@ type Storage struct {
 		Create(context.Context, *Comment) error
 	}
 	Followers interface {
-		Follow(ctx context.Context, followerID, userID int64) error
-		UnFollow(ctx context.Context, followerID, userID int64) error
+		Follow(ctx context.Context, followerID, followeeID int64) error
+		UnFollow(ctx context.Context, followerID, followeeID int64) error
 	}
 }
 

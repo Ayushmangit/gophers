@@ -37,11 +37,11 @@ func (app *application) createCommentHandler(w http.ResponseWriter, r *http.Requ
 		app.BadRequest(w, r, err)
 		return
 	}
+	user := getUserFromCtx(r)
 
 	comment := &store.Comment{
-		PostID: post.ID,
-		//TODO: change the user id when JWT is Done
-		UserID:  79,
+		PostID:  post.ID,
+		UserID:  user.ID,
 		Content: payload.Content,
 	}
 	if err := app.store.Comments.Create(r.Context(), comment); err != nil {

@@ -620,15 +620,6 @@ const docTemplate = `{
                         "name": "userID",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "description": "follow user payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/cmd_api.FollowUser"
-                        }
                     }
                 ],
                 "responses": {
@@ -667,15 +658,6 @@ const docTemplate = `{
                         "name": "userID",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "description": "follow user payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/cmd_api.FollowUser"
-                        }
                     }
                 ],
                 "responses": {
@@ -741,14 +723,6 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 72,
                     "minLength": 3
-                }
-            }
-        },
-        "cmd_api.FollowUser": {
-            "type": "object",
-            "properties": {
-                "user_id": {
-                    "type": "integer"
                 }
             }
         },

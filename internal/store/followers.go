@@ -8,8 +8,8 @@ import (
 )
 
 type Follower struct {
-	UserID     int64  `json:"user_id"`
 	FollowerID int64  `json:"follower_id"`
+	FolloweeID int64  `json:"followee_id"`
 	Created_at string `json:"created_at"`
 }
 
@@ -17,14 +17,14 @@ type FollowerStore struct {
 	db *sql.DB
 }
 
-func (s *FollowerStore) Follow(ctx context.Context, followerID, userID int64) error {
+func (s *FollowerStore) Follow(ctx context.Context, followerID, followeeID int64) error {
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 	query := `
-	INSERT INTO followers (user_id,follower_id) values($1,$2);
+	INSERT INTO followers (follower_id,followee_id) values($1,$2);
 
 	`
-	_, err := s.db.ExecContext(ctx, query, userID, followerID)
+	_, err := s.db.ExecContext(ctx, query, followerID, followeeID)
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok && pqErr.Code == "23505" {
 			return ErrConflict
@@ -33,13 +33,13 @@ func (s *FollowerStore) Follow(ctx context.Context, followerID, userID int64) er
 	return nil
 }
 
-func (s *FollowerStore) UnFollow(ctx context.Context, followerID, userID int64) error {
+func (s *FollowerStore) UnFollow(ctx context.Context, followerID, followeeID int64) error {
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 	query := `
-	DELETE FROM followers where user_id = $1 AND follower_id = $2;
+	DELETE FROM followers where follower_id = $1 AND followee_id = $2;
 
 	`
-	_, err := s.db.ExecContext(ctx, query, userID, followerID)
+	_, err := s.db.ExecContext(ctx, query, followerID, followeeID)
 	return err
 }

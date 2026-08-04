@@ -72,11 +72,16 @@ func (s *UserStore) GetByID(ctx context.Context, id int64) (*User, error) {
 	defer cancel()
 
 	query := `
-	SELECT id,username,email,created_at  from users where id = $1 AND is_active=true;
+	SELECT id,username,email,password,created_at  from users where id = $1 AND is_active=true;
 	`
-	var user User
+	user := User{}
 
-	err := s.db.QueryRowContext(ctx, query, id).Scan(&user.ID, &user.Username, &user.Email, &user.CreatedAt)
+	err := s.db.QueryRowContext(ctx, query, id).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Email,
+		&user.Password.hash,
+		&user.CreatedAt)
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
@@ -165,7 +170,10 @@ func (s *UserStore) getUserFromInvitations(ctx context.Context, tx *sql.Tx, toke
 
 	user := &User{}
 
-	err := tx.QueryRowContext(ctx, query, hashToken, time.Now()).Scan(
+	err := tx.QueryRowContext(ctx,
+		query,
+		hashToken,
+		time.Now()).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Email,

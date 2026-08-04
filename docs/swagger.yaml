@@ -37,11 +37,6 @@ definitions:
     - email
     - password
     type: object
-  cmd_api.FollowUser:
-    properties:
-      user_id:
-        type: integer
-    type: object
   cmd_api.RegisterUserPayload:
     properties:
       email:
@@ -478,12 +473,6 @@ paths:
         name: userID
         required: true
         type: integer
-      - description: follow user payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/cmd_api.FollowUser'
       produces:
       - application/json
       responses:
@@ -508,12 +497,6 @@ paths:
         name: userID
         required: true
         type: integer
-      - description: follow user payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/cmd_api.FollowUser'
       produces:
       - application/json
       responses:
