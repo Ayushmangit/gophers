@@ -32,7 +32,7 @@ func (app *application) NotFound(w http.ResponseWriter, r *http.Request, err err
 
 func (app *application) ForbiddenResponse(w http.ResponseWriter, r *http.Request) {
 	app.logger.Warnf("forbidden", "method", r.Method, "path", r.URL.Path)
-	WriteJsonError(w, http.StatusForbidden, "not found")
+	WriteJsonError(w, http.StatusForbidden, "forbidden request")
 }
 
 func (app *application) Conflict(w http.ResponseWriter, r *http.Request, err error) {

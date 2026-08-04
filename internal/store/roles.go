@@ -19,6 +19,8 @@ type RoleStore struct {
 func (s *RoleStore) GetByName(ctx context.Context, slug string) (*Role, error) {
 	query := `SELECT id,name,description,level from roles where name = $1`
 
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
 	role := &Role{}
 	err := s.db.QueryRowContext(ctx, query, slug).Scan(
 		&role.ID,
