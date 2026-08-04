@@ -20,6 +20,7 @@ type User struct {
 	CreatedAt string   `json:"created_at"`
 	IsActive  bool     `json:"is_active"`
 	RoleID    int64    `json:"role_id"`
+	Role      Role     `json:"role"`
 }
 
 type password struct {
@@ -77,12 +78,36 @@ func (s *UserStore) Create(ctx context.Context, tx *sql.Tx, user *User) error {
 	}
 	return nil
 }
+
+func (s *UserStore) GetByEmail(ctx context.Context, email string) (*User, error) {
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
+	query := `select id,username,email,password,created_at from users where email = $1 AND is_active = true`
+	var user User
+	err := s.db.QueryRowContext(ctx, query, email).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Email,
+		&user.Password.hash,
+		&user.CreatedAt,
+	)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrNotFound
+		default:
+			return nil, err
+		}
+	}
+	return &user, nil
+}
+
 func (s *UserStore) GetByID(ctx context.Context, id int64) (*User, error) {
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
 	query := `
-	SELECT id,username,email,password,created_at  from users where id = $1 AND is_active=true;
+	SELECT users.id,username,email,password,created_at,roles.* from users JOIN roles ON (users.role_id) = roles.id where users.id = $1 AND is_active=true;
 	`
 	user := User{}
 
@@ -91,7 +116,11 @@ func (s *UserStore) GetByID(ctx context.Context, id int64) (*User, error) {
 		&user.Username,
 		&user.Email,
 		&user.Password.hash,
-		&user.CreatedAt)
+		&user.CreatedAt,
+		&user.Role.ID,
+		&user.Role.Name,
+		&user.Role.Level,
+		&user.Role.Description)
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
@@ -238,27 +267,4 @@ func (s *UserStore) delete(ctx context.Context, tx *sql.Tx, userID int64) error 
 		return err
 	}
 	return nil
-}
-
-func (s *UserStore) GetByEmail(ctx context.Context, email string) (*User, error) {
-	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
-	defer cancel()
-	query := `select id,username,email,password,created_at from users where email = $1 AND is_active = true`
-	var user User
-	err := s.db.QueryRowContext(ctx, query, email).Scan(
-		&user.ID,
-		&user.Username,
-		&user.Email,
-		&user.Password.hash,
-		&user.CreatedAt,
-	)
-	if err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			return nil, ErrNotFound
-		default:
-			return nil, err
-		}
-	}
-	return &user, nil
 }
