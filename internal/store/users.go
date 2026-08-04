@@ -19,6 +19,7 @@ type User struct {
 	Password  password `json:"-"`
 	CreatedAt string   `json:"created_at"`
 	IsActive  bool     `json:"is_active"`
+	RoleID    int64    `json:"role_id"`
 }
 
 type password struct {
@@ -36,6 +37,14 @@ func (p *password) Set(text string) error {
 	return nil
 }
 
+// NOTE: Compare Hashed passwords
+func (p *password) Compare(providedPassword string) error {
+	return bcrypt.CompareHashAndPassword(
+		p.hash,
+		[]byte(providedPassword),
+	)
+}
+
 type UserStore struct {
 	db *sql.DB
 }
@@ -44,13 +53,14 @@ func (s *UserStore) Create(ctx context.Context, tx *sql.Tx, user *User) error {
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 	query := `
-	INSERT into Users (username,email,password)
-	VALUES ($1,$2,$3) returning id,created_at
+	INSERT into Users (username,email,password,role_id)
+	VALUES ($1,$2,$3,$4) returning id,created_at
 	`
 	err := tx.QueryRowContext(ctx, query,
 		user.Username,
 		user.Email,
 		user.Password.hash,
+		user.RoleID,
 	).Scan(
 		&user.ID,
 		&user.CreatedAt,

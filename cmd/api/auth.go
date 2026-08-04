@@ -130,7 +130,6 @@ type CreateUserTokenPayload struct {
 //	@Failure		500		{object}	error
 //	@Router			/authentication/token [post]
 func (app *application) createTokenHandler(w http.ResponseWriter, r *http.Request) {
-	//parse the payload
 	ctx := r.Context()
 	var payload CreateUserTokenPayload
 	if err := ReadJson(w, r, &payload); err != nil {
@@ -152,6 +151,11 @@ func (app *application) createTokenHandler(w http.ResponseWriter, r *http.Reques
 		default:
 			app.InternalServerError(w, r, err)
 		}
+		return
+	}
+
+	if err := user.Password.Compare(payload.Password); err != nil {
+		app.UnAuthorized(w, r, err)
 		return
 	}
 	//NOTE:generate the token -> add claims

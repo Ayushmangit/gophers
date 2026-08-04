@@ -91,5 +91,4 @@ func (app *application) AuthTokenMiddleware(next http.Handler) http.Handler {
 		//NOTE: TO send the user in the ctx we need to serve it with the handler
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
-
 }
