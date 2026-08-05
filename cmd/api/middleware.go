@@ -58,13 +58,13 @@ func (app *application) AuthTokenMiddleware(next http.Handler) http.Handler {
 		//Fetch the header
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
-			app.UnAuthorized(w, r, fmt.Errorf("unauthorized"))
+			app.UnAuthorized(w, r, fmt.Errorf("unauthorized header is missing"))
 			return
 		}
 		//parse the header
 		parts := strings.Split(authHeader, " ") // authentication Bearer asdsadasdzxxxxx
 		if len(parts) != 2 || parts[0] != BEARER {
-			app.UnAuthorized(w, r, fmt.Errorf("unauthorized"))
+			app.UnAuthorized(w, r, fmt.Errorf("unauthorized invalid token"))
 			return
 		}
 		//validate
