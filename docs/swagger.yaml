@@ -73,6 +73,10 @@ definitions:
         type: integer
       is_active:
         type: boolean
+      role:
+        $ref: '#/definitions/github_com_Ayushmangit_social_internal_store.Role'
+      role_id:
+        type: integer
       token:
         type: string
       username:
@@ -149,6 +153,17 @@ definitions:
       version:
         type: integer
     type: object
+  github_com_Ayushmangit_social_internal_store.Role:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      level:
+        type: integer
+      name:
+        type: string
+    type: object
   github_com_Ayushmangit_social_internal_store.User:
     properties:
       created_at:
@@ -159,6 +174,10 @@ definitions:
         type: integer
       is_active:
         type: boolean
+      role:
+        $ref: '#/definitions/github_com_Ayushmangit_social_internal_store.Role'
+      role_id:
+        type: integer
       username:
         type: string
     type: object
@@ -477,7 +496,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: user Followed
+          description: followed
         "404":
           description: Not Found
           schema: {}

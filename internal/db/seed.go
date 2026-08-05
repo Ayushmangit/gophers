@@ -141,7 +141,9 @@ func generateUsers(num int) []*store.User {
 		u := &store.User{
 			Username: usernames[i],
 			Email:    usernames[i] + "@example.com",
-			RoleID:   1,
+			Role: store.Role{
+				Name: "user",
+			},
 		}
 		if err := u.Password.Set("example123"); err != nil {
 			panic(err)

@@ -624,7 +624,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "user Followed"
+                        "description": "followed"
                     },
                     "404": {
                         "description": "Not Found",
@@ -777,6 +777,12 @@ const docTemplate = `{
                 "is_active": {
                     "type": "boolean"
                 },
+                "role": {
+                    "$ref": "#/definitions/github_com_Ayushmangit_social_internal_store.Role"
+                },
+                "role_id": {
+                    "type": "integer"
+                },
                 "token": {
                     "type": "string"
                 },
@@ -893,6 +899,23 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_Ayushmangit_social_internal_store.Role": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "level": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_Ayushmangit_social_internal_store.User": {
             "type": "object",
             "properties": {
@@ -907,6 +930,12 @@ const docTemplate = `{
                 },
                 "is_active": {
                     "type": "boolean"
+                },
+                "role": {
+                    "$ref": "#/definitions/github_com_Ayushmangit_social_internal_store.Role"
+                },
+                "role_id": {
+                    "type": "integer"
                 },
                 "username": {
                     "type": "string"
