@@ -28,8 +28,24 @@ const userCtx userKey = "user"
 //	@Security		ApiKeyAuth
 //	@Router			/users/{userID} [get]
 func (app *application) getUserHandler(w http.ResponseWriter, r *http.Request) {
-	user := getUserFromCtx(r)
+	userID := chi.URLParam(r, "userID")
+	id, err := strconv.ParseInt(userID, 10, 64)
+	if err != nil {
+		app.BadRequest(w, r, err)
+		return
+	}
+	ctx := r.Context()
 
+	user, err := app.getUser(ctx, id)
+	if err != nil {
+		switch err {
+		case store.ErrNotFound:
+			app.NotFound(w, r, err)
+		default:
+			app.InternalServerError(w, r, err)
+		}
+		return
+	}
 	if err := app.jsonResponse(w, http.StatusOK, user); err != nil {
 		app.InternalServerError(w, r, err)
 		return

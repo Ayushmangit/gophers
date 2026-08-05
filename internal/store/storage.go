@@ -8,6 +8,7 @@ import (
 )
 
 var (
+	ErrBadRequest        = errors.New("invalid payload")
 	ErrNotFound          = errors.New("record not found")
 	ErrConflict          = errors.New("Resource already exists")
 	ErrDuplicateEmail    = errors.New("user with email already exists")

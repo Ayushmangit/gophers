@@ -9,6 +9,7 @@ import (
 	"github.com/Ayushmangit/social/internal/auth"
 	"github.com/Ayushmangit/social/internal/mailer"
 	"github.com/Ayushmangit/social/internal/store"
+	"github.com/Ayushmangit/social/internal/store/cache"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -20,6 +21,7 @@ import (
 type application struct {
 	config        config
 	store         store.Storage
+	cacheStorage  cache.Storage
 	logger        *zap.SugaredLogger
 	mailer        mailer.Client
 	authenticator auth.Authenticator
@@ -39,7 +41,16 @@ type config struct {
 	frontendURL string
 	mail        mailConfig
 	auth        authConfig
+	redis       redisConfig
 }
+
+type redisConfig struct {
+	addr    string
+	db      int
+	pw      string
+	enabled bool
+}
+
 type authConfig struct {
 	basic basicConfig
 	token tokenConfig
