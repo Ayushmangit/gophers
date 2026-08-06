@@ -13,6 +13,7 @@ import (
 	"github.com/Ayushmangit/social/docs"
 	"github.com/Ayushmangit/social/internal/auth"
 	"github.com/Ayushmangit/social/internal/mailer"
+	"github.com/Ayushmangit/social/internal/ratelimiter"
 	"github.com/Ayushmangit/social/internal/store"
 	"github.com/Ayushmangit/social/internal/store/cache"
 	"github.com/go-chi/chi/v5"
@@ -30,6 +31,7 @@ type application struct {
 	logger        *zap.SugaredLogger
 	mailer        mailer.Client
 	authenticator auth.Authenticator
+	rateLimiter   ratelimiter.Limiter
 }
 type dbConfig struct {
 	addr         string
@@ -47,6 +49,7 @@ type config struct {
 	mail        mailConfig
 	auth        authConfig
 	redis       redisConfig
+	ratelimiter ratelimiter.Config
 }
 
 type redisConfig struct {
@@ -97,10 +100,12 @@ func (app *application) mount() http.Handler {
 	r.Use(middleware.Recoverer)
 
 	r.Use(middleware.Timeout(time.Second * 60))
+	r.Use(app.RateLimiterMiddleware)
 
 	r.Route("/v1", func(r chi.Router) {
 		//NOTE: consume the auth middleware like this
-		r.With(app.BasicAuthMiddleware()).Get("/health", app.healthCheckHandler)
+		// r.With(app.BasicAuthMiddleware()).Get("/health", app.healthCheckHandler)
+		r.Get("/health", app.healthCheckHandler)
 
 		docsURL := fmt.Sprintf("%s/swagger/doc.json", app.config.addr)
 		r.Get("/swagger/*", httpSwagger.Handler(

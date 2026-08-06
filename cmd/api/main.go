@@ -7,6 +7,7 @@ import (
 	"github.com/Ayushmangit/social/internal/db"
 	"github.com/Ayushmangit/social/internal/env"
 	"github.com/Ayushmangit/social/internal/mailer"
+	"github.com/Ayushmangit/social/internal/ratelimiter"
 	"github.com/Ayushmangit/social/internal/store"
 	"github.com/Ayushmangit/social/internal/store/cache"
 	"github.com/go-redis/redis/v8"
@@ -14,6 +15,7 @@ import (
 )
 
 const version = "0.0.1"
+const TIMEFRAME_RATELIMITER = time.Second * 5
 
 //	@title			GopherSocial API
 //	@description	API for GopherSocial , a social network for gophers
@@ -71,6 +73,11 @@ func main() {
 				aud:    env.GetString("TOKEN_HOST", "Gophersocial"),
 			},
 		},
+		ratelimiter: ratelimiter.Config{
+			RequestPerTimeFrame: env.GetInt("RATELIMITER_REQ_COUNT", 10),
+			TimeFrame:           TIMEFRAME_RATELIMITER,
+			Enabled:             env.GetBool("RATELIMITER_ENABLED", true),
+		},
 	}
 
 	//Logger
@@ -84,6 +91,7 @@ func main() {
 	}
 	defer db.Close()
 	logger.Info("database connection is established")
+
 	store := store.NewStorage(db)
 	//NOTE: mailer consume
 	mailer := mailer.NewSendGridMailer(cfg.mail.sendGrid.apiKey, cfg.mail.fromEmail)
@@ -97,6 +105,10 @@ func main() {
 	}
 	cacheStorage := cache.NewRedisStorage(rdb)
 
+	rateLimiter := ratelimiter.NewFixedWindowLimiter(
+		cfg.ratelimiter.RequestPerTimeFrame,
+		cfg.ratelimiter.TimeFrame,
+	)
 	app := &application{
 		config:        cfg,
 		store:         store,
@@ -104,6 +116,7 @@ func main() {
 		logger:        logger,
 		mailer:        mailer,
 		authenticator: jwtAuthenticator,
+		rateLimiter:   rateLimiter,
 	}
 
 	mux := app.mount()
