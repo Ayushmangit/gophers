@@ -12,6 +12,7 @@ import (
 
 	"github.com/Ayushmangit/social/docs"
 	"github.com/Ayushmangit/social/internal/auth"
+	"github.com/Ayushmangit/social/internal/env"
 	"github.com/Ayushmangit/social/internal/mailer"
 	"github.com/Ayushmangit/social/internal/ratelimiter"
 	"github.com/Ayushmangit/social/internal/store"
@@ -88,7 +89,7 @@ type sendGridConfig struct {
 func (app *application) mount() http.Handler {
 	r := chi.NewRouter()
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"https://*", "http://*"},
+		AllowedOrigins:   []string{env.GetString("CORS_ALLOWED_ORIGINS", "http://localhost:5173")},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
