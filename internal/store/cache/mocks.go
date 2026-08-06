@@ -21,4 +21,3 @@ func (m *MockUserStore) Get(ctx context.Context, userID int64) (*store.User, err
 func (m *MockUserStore) Set(ctx context.Context, user *store.User) error {
 	return nil
 }
-
