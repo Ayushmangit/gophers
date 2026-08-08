@@ -12,7 +12,7 @@ func (app *application) UnAuthorizedBasicError(w http.ResponseWriter, r *http.Re
 
 func (app *application) UnAuthorized(w http.ResponseWriter, r *http.Request, err error) {
 	app.logger.Errorw("unauthorized error", "method", r.Method, "path", r.URL.Path, "error", err.Error())
-	WriteJsonError(w, http.StatusUnauthorized, "unauthorized")
+	WriteJsonError(w, http.StatusUnauthorized, err.Error())
 }
 
 func (app *application) InternalServerError(w http.ResponseWriter, r *http.Request, err error) {

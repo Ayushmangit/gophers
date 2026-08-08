@@ -4,4 +4,4 @@ RENAME COLUMN user_id TO followee_id;
 
 -- +goose Down
 ALTER TABLE followers
-RENAME COLUMN follower_id TO follower_id;
+RENAME COLUMN followee_id TO user_id;
