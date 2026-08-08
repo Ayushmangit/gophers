@@ -16,7 +16,7 @@ import (
 	"go.uber.org/zap"
 )
 
-const version = "" // semver
+const version = "1.0.1" // semver
 const TIMEFRAME_RATELIMITER = time.Second * 5
 
 //	@title			GopherSocial API
