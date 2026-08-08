@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/Ayushmangit/gophers/compare/v1.0.0...v1.0.1) (2026-08-08)
+
+
+### Features
+
+* update-version_script ([251cac9](https://github.com/Ayushmangit/gophers/commit/251cac9694d121c0454ba43f0ace8789546bc2f8))
+
 ## 1.0.0 (2026-08-08)
 
 
