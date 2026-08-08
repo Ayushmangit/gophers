@@ -10,7 +10,7 @@ import (
 var (
 	ErrBadRequest        = errors.New("invalid payload")
 	ErrNotFound          = errors.New("record not found")
-	ErrConflict          = errors.New("Resource already exists")
+	ErrConflict          = errors.New("resource already exists")
 	ErrDuplicateEmail    = errors.New("user with email already exists")
 	ErrDuplicateUsername = errors.New("username already exists")
 	QueryTimeoutDuration = time.Second * 5
