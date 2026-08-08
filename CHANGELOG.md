@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/Ayushmangit/gophers/compare/v1.0.1...v1.1.0) (2026-08-08)
+
+
+### Features
+
+* dockerfile ([5c567d0](https://github.com/Ayushmangit/gophers/commit/5c567d0e5ee2e8af78f35a48b5e45fd283bc0fe0))
+
+
+### Bug Fixes
+
+* Dockerfilr ([7293c87](https://github.com/Ayushmangit/gophers/commit/7293c874078de74b2bbc1a901506bce4935f9275))
+
 ## [1.0.1](https://github.com/Ayushmangit/gophers/compare/v1.0.0...v1.0.1) (2026-08-08)
 
 
