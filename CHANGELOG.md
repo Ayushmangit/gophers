@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.2](https://github.com/Ayushmangit/gophers/compare/v1.1.1...v1.1.2) (2026-08-09)
+
+
+### Features
+
+* Frontend work ([d433633](https://github.com/Ayushmangit/gophers/commit/d433633d36b83249daf7ac4d5f0ec54cb82e1010))
+
+
+### Bug Fixes
+
+* confirm -&gt; activate ([3db30e6](https://github.com/Ayushmangit/gophers/commit/3db30e6582335ffadff99fe9406e25850b4bd524))
+* PostDetails post handler LINK's added ([c6b5eb3](https://github.com/Ayushmangit/gophers/commit/c6b5eb33a9e093ae92a92813269604ce8f9d75a2))
+
 ## [1.1.1](https://github.com/Ayushmangit/gophers/compare/v1.1.0...v1.1.1) (2026-08-08)
 
 
