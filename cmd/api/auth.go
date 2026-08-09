@@ -14,8 +14,13 @@ import (
 )
 
 type UserWithToken struct {
-	*store.User
-	Token string `json:"token"`
+	*store.User `json:"user"`
+	Token       string `json:"token"`
+}
+
+type AuthenticateTokenResponse struct {
+	*store.User  `json:"user"`
+	Access_token string `json:"access_token"`
 }
 
 type RegisterUserPayload struct {
@@ -166,17 +171,22 @@ func (app *application) createTokenHandler(w http.ResponseWriter, r *http.Reques
 		"sub": user.ID,
 		"exp": time.Now().Add(app.config.auth.token.exp).Unix(),
 		"iat": time.Now().Unix(),
-		"naf": time.Now().Unix(),
+		"nbf": time.Now().Unix(),
 		"iss": app.config.auth.token.iss,
 		"aud": app.config.auth.token.aud,
 	}
-	token, err := app.authenticator.GenerateToken(claims)
+	access_token, err := app.authenticator.GenerateToken(claims)
 	if err != nil {
 		app.InternalServerError(w, r, err)
 		return
 	}
+
+	var response = &AuthenticateTokenResponse{
+		user,
+		access_token,
+	}
 	//send it to the client
-	if err := app.jsonResponse(w, http.StatusCreated, token); err != nil {
+	if err := app.jsonResponse(w, http.StatusCreated, response); err != nil {
 		app.InternalServerError(w, r, err)
 		return
 	}
