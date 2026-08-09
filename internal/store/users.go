@@ -112,7 +112,7 @@ func (s *UserStore) GetByID(ctx context.Context, id int64) (*User, error) {
 	defer cancel()
 
 	query := `
-	SELECT users.id,username,email,password,created_at,roles.* from users JOIN roles ON (users.role_id) = roles.id where users.id = $1 AND is_active=true;
+	SELECT users.id,username,email,password,created_at,users.is_active,roles.* from users JOIN roles ON (users.role_id) = roles.id where users.id = $1 AND is_active=true;
 	`
 	user := User{}
 
@@ -122,6 +122,7 @@ func (s *UserStore) GetByID(ctx context.Context, id int64) (*User, error) {
 		&user.Email,
 		&user.Password.hash,
 		&user.CreatedAt,
+		&user.IsActive,
 		&user.Role.ID,
 		&user.Role.Name,
 		&user.Role.Level,

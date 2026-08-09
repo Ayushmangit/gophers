@@ -30,6 +30,7 @@ export default function Profile() {
 
 	useEffect(() => {
 		if (!userID) return
+		console.log("profile", profile)
 
 		dispatch(getUser(id))
 	}, [dispatch, userID, id])
@@ -150,8 +151,8 @@ export default function Profile() {
 											loading
 										}
 										className={`rounded-xl px-6 py-3 font-semibold transition ${isFollowing
-												? "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-												: "bg-gray-600 text-white hover:bg-blue-700"
+											? "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+											: "bg-gray-600 text-white hover:bg-blue-700"
 											}`}
 									>
 										{isFollowing

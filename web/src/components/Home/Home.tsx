@@ -2,9 +2,15 @@ import { useEffect } from "react"
 import { Link } from "react-router"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import { getFeed } from "../../app/features/post/postThunk"
+import { logoutUser } from "../../app/features/auth/authThunk"
 
 export default function Home() {
+
   const dispatch = useAppDispatch()
+
+  function handleLogout() {
+    dispatch(logoutUser())
+  }
 
   const {
     posts,
@@ -52,6 +58,8 @@ export default function Home() {
             >
               Create Post
             </Link>
+
+            <Link to={"/login"} onClick={handleLogout}>Logout</Link>
 
             {user && (
               <Link
@@ -168,7 +176,7 @@ export default function Home() {
 
                   <div className="flex items-center justify-between">
                     <Link
-                      to={`/profile/${post.user.id}`}
+                      to={`/profile/${post.user_id}`}
                       className="flex items-center gap-3"
                     >
                       <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-200 font-bold text-gray-700">

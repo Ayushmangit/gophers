@@ -56,3 +56,17 @@ export const loginUser = createAsyncThunk<
 		}
 	},
 )
+
+
+export const logoutUser = createAsyncThunk(
+	"auth/logout",
+	async (_, { rejectWithValue }) => {
+		try {
+			localStorage.removeItem("access_token")
+
+			return null
+		} catch (error) {
+			return rejectWithValue("Logout failed")
+		}
+	}
+)

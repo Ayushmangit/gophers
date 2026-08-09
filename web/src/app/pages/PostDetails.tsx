@@ -125,30 +125,42 @@ export default function PostDetails() {
 				<article className="rounded-3xl bg-white p-8 shadow-sm">
 					{/* Author */}
 
-					<div className="flex items-center gap-3">
-						<div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200 font-bold text-gray-700">
-							{post.user.username
-								.charAt(0)
-								.toUpperCase()}
-						</div>
+					<div className="flex items-center justify-between">
+						<Link
+							to={`/profile/${post.user_id}`}
+							className="flex items-center gap-3"
+						>
+							<div className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-200 font-bold text-gray-700">
+								{post.user.username
+									.charAt(0)
+									.toUpperCase()}
+							</div>
 
-						<div>
-							<p className="font-semibold text-gray-900">
-								@
-								{
-									post.user
-										.username
-								}
-							</p>
+							<div>
+								<p className="font-semibold text-gray-900 hover:text-blue-600">
+									@
+									{
+										post
+											.user
+											.username
+									}
+								</p>
 
-							<p className="text-sm text-gray-500">
-								{new Date(
-									post.created_at
-								).toLocaleDateString()}
-							</p>
-						</div>
+								<p className="text-xs text-gray-400">
+									{new Date(
+										post.created_at
+									).toLocaleDateString(
+										undefined,
+										{
+											year: "numeric",
+											month: "short",
+											day: "numeric",
+										}
+									)}
+								</p>
+							</div>
+						</Link>
 					</div>
-
 					{/* Post */}
 
 					<div className="mt-8">

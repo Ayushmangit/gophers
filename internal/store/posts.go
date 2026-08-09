@@ -60,7 +60,21 @@ func (s *PostStore) GetByID(ctx context.Context, id int64) (*Post, error) {
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	query := `select * from posts where id = $1`
+	query := `
+	SELECT
+		p.id,
+		p.title,
+		p.user_id,
+		p.content,
+		p.created_at,
+		p.tags,
+		p.updated_at,
+		p.version,
+		u.username
+	FROM posts p
+	JOIN users u ON u.id = p.user_id
+	WHERE p.id = $1
+`
 	var post Post
 	err := s.db.QueryRowContext(ctx, query, id).Scan(
 		&post.ID,
@@ -71,6 +85,7 @@ func (s *PostStore) GetByID(ctx context.Context, id int64) (*Post, error) {
 		pq.Array(&post.Tags),
 		&post.UpdatedAt,
 		&post.Version,
+		&post.User.Username,
 	)
 	if err != nil {
 		switch {

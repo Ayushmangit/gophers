@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit"
 import {
 	loginUser,
+	logoutUser,
 	registerUser,
 } from "./authThunk"
 import type { User } from "../../types/User"
@@ -97,6 +98,10 @@ export const authSlice = createSlice({
 						"Login failed"
 				},
 			)
+
+			.addCase(logoutUser.fulfilled, (state) => {
+				state.userData = null
+			})
 	},
 })
 
