@@ -243,17 +243,18 @@ export default function PostDetails() {
 									}
 									className="rounded-2xl bg-white p-5 shadow-sm"
 								>
-									<div className="flex items-center gap-3">
-										<div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 text-sm font-bold">
-											{comment.user.username
-												.charAt(
-													0
-												)
+									<Link
+										to={`/profile/${comment.user_id}`}
+										className="flex items-center gap-3"
+									>
+										<div className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-200 font-bold text-gray-700">
+											{post.user.username
+												.charAt(0)
 												.toUpperCase()}
 										</div>
 
 										<div>
-											<p className="font-semibold text-gray-900">
+											<p className="font-semibold text-gray-900 hover:text-blue-600">
 												@
 												{
 													comment
@@ -264,11 +265,18 @@ export default function PostDetails() {
 
 											<p className="text-xs text-gray-400">
 												{new Date(
-													comment.created_at
-												).toLocaleDateString()}
+													post.created_at
+												).toLocaleDateString(
+													undefined,
+													{
+														year: "numeric",
+														month: "short",
+														day: "numeric",
+													}
+												)}
 											</p>
 										</div>
-									</div>
+									</Link>
 
 									<p className="mt-3 text-gray-600">
 										{

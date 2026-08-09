@@ -40,4 +40,7 @@ export interface LoginUser {
 }
 
 
-export type LoginResponse = string
+export interface LoginResponse {
+	user: User,
+	access_token: string
+}

@@ -77,14 +77,15 @@ export const authSlice = createSlice({
 			.addCase(
 				loginUser.fulfilled,
 				(state, action) => {
+					state.userData = action.payload.user
 					state.loading = false
 					state.error = null
 					state.accessToken =
-						action.payload
+						action.payload.access_token
 
 					localStorage.setItem(
 						"access_token",
-						action.payload,
+						action.payload.access_token,
 					)
 				},
 			)

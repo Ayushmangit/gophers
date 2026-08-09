@@ -46,7 +46,7 @@ export default function Home() {
             to="/home"
             className="text-2xl font-extrabold tracking-tight text-gray-900"
           >
-            Gopher Social
+            Gopher Social Welcome's {user?.username ?? "maka"}
           </Link>
 
           {/* Navigation */}
@@ -181,9 +181,7 @@ export default function Home() {
                     >
                       <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-200 font-bold text-gray-700">
                         {post.user.username
-                          .charAt(
-                            0
-                          )
+                          .charAt(0)
                           .toUpperCase()}
                       </div>
 

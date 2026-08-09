@@ -118,6 +118,7 @@ export default function Profile() {
 							{profile.username
 								.charAt(0)
 								.toUpperCase()}
+
 						</div>
 
 						{/* Information */}

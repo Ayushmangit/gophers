@@ -1,8 +1,10 @@
+//TODO: ADD me thunk,add reducer,create the backend endponint prolly just return the user from the authmiddleware easy peasy
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import api from "../../api/axios"
 import type {
+	LoginResponse,
 	LoginUser,
-	RegisterUser,
+	RegisterUser
 } from "../../types/User"
 
 export const registerUser = createAsyncThunk<
@@ -32,7 +34,7 @@ export const registerUser = createAsyncThunk<
 )
 
 export const loginUser = createAsyncThunk<
-	string,
+	LoginResponse,
 	LoginUser,
 	{ rejectValue: string }
 >(
@@ -43,8 +45,10 @@ export const loginUser = createAsyncThunk<
 				"authentication/token",
 				data,
 			)
-
-			return response.data.data
+			const { user, access_token } = response.data.data
+			console.log("user ", user)
+			console.log("token ", access_token)
+			return { user, access_token }
 		} catch (error: any) {
 			console.error("Login error:", error)
 
