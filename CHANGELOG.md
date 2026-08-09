@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.3](https://github.com/Ayushmangit/gophers/compare/v1.1.2...v1.1.3) (2026-08-09)
+
+
+### Features
+
+* added profile links , will make into a component later ([14eb4cf](https://github.com/Ayushmangit/gophers/commit/14eb4cf74cb62f0ff90c318fff51ad03ea536610))
+
+
+### Bug Fixes
+
+* auth.go fixes serialized the user ([291f526](https://github.com/Ayushmangit/gophers/commit/291f5267a03fca9ddc875064b6256d821f555e70))
+
 ## [1.1.2](https://github.com/Ayushmangit/gophers/compare/v1.1.1...v1.1.2) (2026-08-09)
 
 
