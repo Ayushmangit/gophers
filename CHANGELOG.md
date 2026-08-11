@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.4](https://github.com/Ayushmangit/gophers/compare/v1.1.3...v1.1.4) (2026-08-11)
+
+
+### Features
+
+* Added /authentication/me route to help rehydrate the frontend with some changes in queries , isActive and role_id fix in GetByID store application method ([0dd1b37](https://github.com/Ayushmangit/gophers/commit/0dd1b37c19d48a03aaf1ebfb52ecad64ca98b335))
+
+
+### Bug Fixes
+
+* Me Response struct created and async thunks created ([9220494](https://github.com/Ayushmangit/gophers/commit/922049467d52e29f8716d96854dc30011958161d))
+
 ## [1.1.3](https://github.com/Ayushmangit/gophers/compare/v1.1.2...v1.1.3) (2026-08-09)
 
 
