@@ -149,6 +149,7 @@ func (app *application) mount() http.Handler {
 		r.Route("/authentication", func(r chi.Router) {
 			r.Post("/user", app.registerUserHandler)
 			r.Post("/token", app.createTokenHandler)
+			r.With(app.AuthTokenMiddleware).Get("/me", app.getLoggedInUserHandler)
 		})
 
 	})

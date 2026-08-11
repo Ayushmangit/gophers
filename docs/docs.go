@@ -24,6 +24,42 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/authentication/me": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Returns user from context",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "authentication"
+                ],
+                "summary": "Returns user from context",
+                "responses": {
+                    "200": {
+                        "description": "Logged in user",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Ayushmangit_social_internal_store.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/authentication/token": {
             "post": {
                 "description": "Creates a token for a user",
@@ -50,9 +86,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Token",
+                        "description": "user credentials",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/cmd_api.AuthenticateTokenResponse"
                         }
                     },
                     "400": {
@@ -673,6 +709,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "cmd_api.AuthenticateTokenResponse": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/github_com_Ayushmangit_social_internal_store.User"
+                }
+            }
+        },
         "cmd_api.CreateCommentPayload": {
             "type": "object",
             "required": [
@@ -765,29 +812,11 @@ const docTemplate = `{
         "cmd_api.UserWithToken": {
             "type": "object",
             "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "is_active": {
-                    "type": "boolean"
-                },
-                "role": {
-                    "$ref": "#/definitions/github_com_Ayushmangit_social_internal_store.Role"
-                },
-                "role_id": {
-                    "type": "integer"
-                },
                 "token": {
                     "type": "string"
                 },
-                "username": {
-                    "type": "string"
+                "user": {
+                    "$ref": "#/definitions/github_com_Ayushmangit_social_internal_store.User"
                 }
             }
         },

@@ -1,5 +1,12 @@
 basePath: /v1
 definitions:
+  cmd_api.AuthenticateTokenResponse:
+    properties:
+      access_token:
+        type: string
+      user:
+        $ref: '#/definitions/github_com_Ayushmangit_social_internal_store.User'
+    type: object
   cmd_api.CreateCommentPayload:
     properties:
       content:
@@ -65,22 +72,10 @@ definitions:
     type: object
   cmd_api.UserWithToken:
     properties:
-      created_at:
-        type: string
-      email:
-        type: string
-      id:
-        type: integer
-      is_active:
-        type: boolean
-      role:
-        $ref: '#/definitions/github_com_Ayushmangit_social_internal_store.Role'
-      role_id:
-        type: integer
       token:
         type: string
-      username:
-        type: string
+      user:
+        $ref: '#/definitions/github_com_Ayushmangit_social_internal_store.User'
     type: object
   github_com_Ayushmangit_social_internal_store.Comment:
     properties:
@@ -193,6 +188,29 @@ info:
   termsOfService: http://swagger.io/terms/
   title: GopherSocial API
 paths:
+  /authentication/me:
+    get:
+      consumes:
+      - application/json
+      description: Returns user from context
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Logged in user
+          schema:
+            $ref: '#/definitions/github_com_Ayushmangit_social_internal_store.User'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Returns user from context
+      tags:
+      - authentication
   /authentication/token:
     post:
       consumes:
@@ -209,9 +227,9 @@ paths:
       - application/json
       responses:
         "200":
-          description: Token
+          description: user credentials
           schema:
-            type: string
+            $ref: '#/definitions/cmd_api.AuthenticateTokenResponse'
         "400":
           description: Bad Request
           schema: {}

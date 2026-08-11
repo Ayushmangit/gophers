@@ -131,8 +131,8 @@ type CreateUserTokenPayload struct {
 //	@Tags			authentication
 //	@Accept			json
 //	@Produce		json
-//	@Param			payload	body		CreateUserTokenPayload	true	"User credentials"
-//	@Success		200		{string}	string					"Token"
+//	@Param			payload	body		CreateUserTokenPayload		true	"User credentials"
+//	@Success		200		{object}	AuthenticateTokenResponse	"user credentials"
 //	@Failure		400		{object}	error
 //	@Failure		401		{object}	error
 //	@Failure		500		{object}	error
@@ -185,8 +185,32 @@ func (app *application) createTokenHandler(w http.ResponseWriter, r *http.Reques
 		user,
 		access_token,
 	}
+
 	//send it to the client
 	if err := app.jsonResponse(w, http.StatusCreated, response); err != nil {
+		app.InternalServerError(w, r, err)
+		return
+	}
+}
+
+// getLoggedInUserHandler godoc
+//
+//	@Summary		Returns user from context
+//	@Description	Returns user from context
+//	@Tags			authentication
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	store.User	"Logged in user"
+//	@Failure		400	{object}	error
+//	@Failure		500	{object}	error
+//	@Security		ApiKeyAuth
+//	@Router			/authentication/me [get]
+func (app *application) getLoggedInUserHandler(w http.ResponseWriter, r *http.Request) {
+	user := getUserFromCtx(r)
+	if user == nil {
+		app.UnAuthorized(w, r, fmt.Errorf("unauthorized"))
+	}
+	if err := app.jsonResponse(w, http.StatusOK, user); err != nil {
 		app.InternalServerError(w, r, err)
 		return
 	}
