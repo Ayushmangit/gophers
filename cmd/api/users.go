@@ -32,15 +32,16 @@ type UserWithMetadata struct {
 //	@Security		ApiKeyAuth
 //	@Router			/users/{userID} [get]
 func (app *application) getUserHandler(w http.ResponseWriter, r *http.Request) {
+
+	authenticatedUser := getUserFromCtx(r)
 	userID := chi.URLParam(r, "userID")
 	id, err := strconv.ParseInt(userID, 10, 64)
 	if err != nil {
 		app.BadRequest(w, r, err)
 		return
 	}
-	ctx := r.Context()
 
-	user, err := app.getUser(ctx, id)
+	user, err := app.getUser(r.Context(), id)
 	if err != nil {
 		switch err {
 		case store.ErrNotFound:
@@ -50,12 +51,13 @@ func (app *application) getUserHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	authenticatedUser := getUserFromCtx(r)
-	isFollowing, err := app.store.Followers.IsFollowing(ctx, authenticatedUser.ID, id)
+
+	isFollowing, err := app.store.Followers.IsFollowing(r.Context(), authenticatedUser.ID, id)
 	if err != nil {
 		app.InternalServerError(w, r, err)
 		return
 	}
+
 	response := &UserWithMetadata{
 		user,
 		isFollowing,

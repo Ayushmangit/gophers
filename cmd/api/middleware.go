@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -55,42 +56,51 @@ func (app *application) BasicAuthMiddleware() func(http.Handler) http.Handler {
 
 func (app *application) AuthTokenMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		//Fetch the header
+
 		authHeader := r.Header.Get("Authorization")
+
 		if authHeader == "" {
 			app.UnAuthorized(w, r, fmt.Errorf("unauthorized header is missing"))
 			return
 		}
-		//parse the header
-		parts := strings.Split(authHeader, " ") // authentication Bearer asdsadasdzxxxxx
+
+		parts := strings.Split(authHeader, " ")
+
 		if len(parts) != 2 || parts[0] != BEARER {
 			app.UnAuthorized(w, r, fmt.Errorf("unauthorized invalid token"))
 			return
 		}
-		//validate
+
 		jwtToken, err := app.authenticator.ValidateToken(parts[1])
 		if err != nil {
 			app.UnAuthorized(w, r, err)
 			return
 		}
-		//parse the claims
-		claims, _ := jwtToken.Claims.(jwt.MapClaims)
-		//NOTE: convert to float to fix the JWT sub issue
-		userID, err := strconv.ParseInt(fmt.Sprintf("%.f", claims["sub"]), 10, 64)
+
+		claims, ok := jwtToken.Claims.(jwt.MapClaims)
+		if !ok {
+			app.UnAuthorized(w, r, errors.New("invalid token claims"))
+			return
+		}
+
+		userID, err := strconv.ParseInt(
+			fmt.Sprintf("%.f", claims["sub"]),
+			10,
+			64,
+		)
 		if err != nil {
 			app.UnAuthorized(w, r, err)
 			return
 		}
 
-		ctx := r.Context()
-		user, err := app.getUser(ctx, userID)
+		user, err := app.getUser(r.Context(), userID)
 		if err != nil {
 			app.UnAuthorized(w, r, err)
 			return
 		}
 
-		ctx = context.WithValue(ctx, userCtx, user)
-		//NOTE: TO send the user in the ctx we need to serve it with the handler
+		ctx := context.WithValue(r.Context(), userCtx, user)
+
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
@@ -145,6 +155,9 @@ func (app *application) getUser(ctx context.Context, userID int64) (*store.User,
 		if err := app.cacheStorage.Users.Set(ctx, user); err != nil {
 			return nil, err
 		}
+	}
+	if user == nil {
+		return nil, store.ErrNotFound
 	}
 	return user, nil
 }
