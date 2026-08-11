@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.5](https://github.com/Ayushmangit/gophers/compare/v1.1.4...v1.1.5) (2026-08-11)
+
+
+### Features
+
+* added is_following to the backend so i can now check if the logged in user follows somebody or not ([38ef308](https://github.com/Ayushmangit/gophers/commit/38ef3081a1c045fedb45c4a4f06e05226b55fd2a))
+
+
+### Bug Fixes
+
+* TEMP removed some tests ([3f6dc90](https://github.com/Ayushmangit/gophers/commit/3f6dc90c5c774424318832bec92ee0bb495e94c3))
+
 ## [1.1.4](https://github.com/Ayushmangit/gophers/compare/v1.1.3...v1.1.4) (2026-08-11)
 
 
