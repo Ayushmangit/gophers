@@ -96,6 +96,7 @@ export const authSlice = createSlice({
 			)
 			.addCase(logoutUser.fulfilled, (state) => {
 				state.userData = null
+				state.accessToken = null
 				state.loading = false
 			})
 

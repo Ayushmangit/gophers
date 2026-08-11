@@ -11,8 +11,19 @@ import Login from "./app/pages/Login"
 import CreatePost from "./app/pages/CreatePost"
 import PostDetails from "./app/pages/PostDetails"
 import Profile from "./app/pages/Profile"
+import { useEffect } from "react"
+import { useAppDispatch } from "./app/hooks"
+import { me } from "./app/features/auth/authThunk"
 
 function App() {
+  const dispatch = useAppDispatch()
+  useEffect(() => {
+    const token = localStorage.getItem("access_token")
+
+    if (token) {
+      dispatch(me())
+    }
+  }, [dispatch])
   return (
     <BrowserRouter>
       <Routes>

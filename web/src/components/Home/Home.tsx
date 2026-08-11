@@ -2,7 +2,7 @@ import { useEffect } from "react"
 import { Link } from "react-router"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import { getFeed } from "../../app/features/post/postThunk"
-import { logoutUser, me } from "../../app/features/auth/authThunk"
+import { logoutUser } from "../../app/features/auth/authThunk"
 
 export default function Home() {
 
@@ -25,7 +25,6 @@ export default function Home() {
   )
 
   useEffect(() => {
-    dispatch(me())
     dispatch(
       getFeed({
         limit: 20,

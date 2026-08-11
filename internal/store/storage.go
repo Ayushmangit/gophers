@@ -39,6 +39,7 @@ type Storage struct {
 	Followers interface {
 		Follow(ctx context.Context, followerID, followeeID int64) error
 		UnFollow(ctx context.Context, followerID, followeeID int64) error
+		IsFollowing(ctx context.Context, followerID, followeeID int64) (bool, error)
 	}
 	Roles interface {
 		GetByName(context.Context, string) (*Role, error)

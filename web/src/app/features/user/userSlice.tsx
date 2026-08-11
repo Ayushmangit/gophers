@@ -42,7 +42,8 @@ const userSlice = createSlice({
 
 			.addCase(getUser.fulfilled, (state, action) => {
 				state.loading = false
-				state.profile = action.payload
+				state.profile = action.payload.user
+				state.isFollowing = action.payload.is_following
 			})
 
 			.addCase(getUser.rejected, (state, action) => {

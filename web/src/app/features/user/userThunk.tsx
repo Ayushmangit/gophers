@@ -2,8 +2,13 @@ import { createAsyncThunk } from "@reduxjs/toolkit"
 import type { User } from "../../types/User"
 import api from "../../api/axios"
 
+interface UserProfile {
+	user: User
+	is_following: boolean
+}
+
 export const getUser = createAsyncThunk<
-	User,
+	UserProfile,
 	number,
 	{ rejectValue: string }
 >(
@@ -14,7 +19,8 @@ export const getUser = createAsyncThunk<
 				`/users/${userID}`
 			)
 
-			return response.data.data
+			const { user, is_following } = response.data.data
+			return { user, is_following }
 		} catch (error: any) {
 			return thunkAPI.rejectWithValue(
 				error.response?.data?.message ??

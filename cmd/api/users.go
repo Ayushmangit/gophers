@@ -12,6 +12,11 @@ type userKey string
 
 const userCtx userKey = "user"
 
+type UserWithMetadata struct {
+	User        *store.User `json:"user"`
+	IsFollowing bool        `json:"is_following"`
+}
+
 // GetUser godoc
 //
 //	@Summary		Fetches a user profile
@@ -45,7 +50,17 @@ func (app *application) getUserHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	if err := app.jsonResponse(w, http.StatusOK, user); err != nil {
+	authenticatedUser := getUserFromCtx(r)
+	isFollowing, err := app.store.Followers.IsFollowing(ctx, authenticatedUser.ID, id)
+	if err != nil {
+		app.InternalServerError(w, r, err)
+		return
+	}
+	response := &UserWithMetadata{
+		user,
+		isFollowing,
+	}
+	if err := app.jsonResponse(w, http.StatusOK, response); err != nil {
 		app.InternalServerError(w, r, err)
 		return
 	}
