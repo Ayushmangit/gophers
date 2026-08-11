@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit"
 import {
 	loginUser,
 	logoutUser,
+	me,
 	registerUser,
 } from "./authThunk"
 import type { User } from "../../types/User"
@@ -44,7 +45,6 @@ export const authSlice = createSlice({
 					state.error = null
 				},
 			)
-
 			.addCase(
 				registerUser.fulfilled,
 				(state, action) => {
@@ -54,7 +54,6 @@ export const authSlice = createSlice({
 						action.payload.user
 				},
 			)
-
 			.addCase(
 				registerUser.rejected,
 				(state, action) => {
@@ -64,7 +63,6 @@ export const authSlice = createSlice({
 						"Registration failed"
 				},
 			)
-
 			// LOGIN
 			.addCase(
 				loginUser.pending,
@@ -73,7 +71,6 @@ export const authSlice = createSlice({
 					state.error = null
 				},
 			)
-
 			.addCase(
 				loginUser.fulfilled,
 				(state, action) => {
@@ -82,14 +79,12 @@ export const authSlice = createSlice({
 					state.error = null
 					state.accessToken =
 						action.payload.access_token
-
 					localStorage.setItem(
 						"access_token",
 						action.payload.access_token,
 					)
 				},
 			)
-
 			.addCase(
 				loginUser.rejected,
 				(state, action) => {
@@ -99,9 +94,21 @@ export const authSlice = createSlice({
 						"Login failed"
 				},
 			)
-
 			.addCase(logoutUser.fulfilled, (state) => {
 				state.userData = null
+				state.loading = false
+			})
+
+			.addCase(me.pending, (state) => {
+				state.loading = true
+				state.error = null
+			})
+			.addCase(me.fulfilled, (state, action) => {
+				state.userData = action.payload
+			})
+			.addCase(me.rejected, (state, action) => {
+				state.loading = false
+				state.error = action.payload as string
 			})
 	},
 })

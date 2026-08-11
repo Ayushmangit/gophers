@@ -23,6 +23,10 @@ type AuthenticateTokenResponse struct {
 	Access_token string `json:"access_token"`
 }
 
+type MeResponse struct {
+	*store.User `json:"user"`
+}
+
 type RegisterUserPayload struct {
 	Username string `json:"username" validate:"required,max=100"`
 	Email    string `json:"email" validate:"required,email,max=255"`
@@ -210,7 +214,11 @@ func (app *application) getLoggedInUserHandler(w http.ResponseWriter, r *http.Re
 	if user == nil {
 		app.UnAuthorized(w, r, fmt.Errorf("unauthorized"))
 	}
-	if err := app.jsonResponse(w, http.StatusOK, user); err != nil {
+
+	response := &MeResponse{
+		user,
+	}
+	if err := app.jsonResponse(w, http.StatusOK, response); err != nil {
 		app.InternalServerError(w, r, err)
 		return
 	}

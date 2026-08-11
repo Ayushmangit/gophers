@@ -4,7 +4,7 @@ import api from "../../api/axios"
 import type {
 	LoginResponse,
 	LoginUser,
-	RegisterUser
+	RegisterUser,
 } from "../../types/User"
 
 export const registerUser = createAsyncThunk<
@@ -46,8 +46,6 @@ export const loginUser = createAsyncThunk<
 				data,
 			)
 			const { user, access_token } = response.data.data
-			console.log("user ", user)
-			console.log("token ", access_token)
 			return { user, access_token }
 		} catch (error: any) {
 			console.error("Login error:", error)
@@ -74,3 +72,17 @@ export const logoutUser = createAsyncThunk(
 		}
 	}
 )
+
+export const me = createAsyncThunk("authentication/me", async (_, { rejectWithValue }) => {
+	try {
+		const response = await api.get("authentication/me")
+		console.log("me hit")
+		console.log("me response", response)
+		console.log("me response data", response.data)
+		console.log("me response data data", response.data.data)
+		const { user } = response.data.data
+		return user
+	} catch (error) {
+		return rejectWithValue("unauthorized")
+	}
+})
