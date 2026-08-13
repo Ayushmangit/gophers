@@ -37,7 +37,7 @@ export const getFeed = createAsyncThunk<
 				response.data,
 			)
 
-			return response.data.data
+			return response.data.data ?? []
 		} catch (error: any) {
 			console.error(
 				"Feed request failed:",
@@ -68,7 +68,7 @@ export const getPost = createAsyncThunk<
 				`/posts/${postID}`,
 			)
 
-			return response.data.data
+			return response.data.data ?? []
 		} catch (error: any) {
 			const message =
 				error.response?.data?.message ||
@@ -179,7 +179,7 @@ export const createComment = createAsyncThunk<
 				},
 			)
 
-			return response.data.data
+			return response.data.data ?? []
 		} catch (error: any) {
 			const message =
 				error.response?.data?.message ||

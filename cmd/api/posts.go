@@ -89,6 +89,7 @@ func (app *application) getPostHandler(w http.ResponseWriter, r *http.Request) {
 		app.InternalServerError(w, r, err)
 		return
 	}
+
 	post.Comments = comments
 
 	if err := app.jsonResponse(w, http.StatusOK, post); err != nil {

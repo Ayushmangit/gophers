@@ -34,8 +34,8 @@ type Storage struct {
 		Delete(context.Context, int64) error
 	}
 	Comments interface {
-		GetByPostID(context.Context, int64) ([]Comment, error)
-		Create(context.Context, *Comment) error
+		GetByPostID(context.Context, int64) ([]*Comment, error)
+		Create(context.Context, *Comment) (*Comment, error)
 	}
 	Followers interface {
 		Follow(ctx context.Context, followerID, followeeID int64) error

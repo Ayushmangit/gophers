@@ -80,7 +80,7 @@ export const searchUsers = createAsyncThunk(
 				},
 			})
 
-			return response.data.data
+			return response.data.data ?? []
 		} catch (error: any) {
 			return thunkAPI.rejectWithValue(
 				error.response?.data?.message ||

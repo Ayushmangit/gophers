@@ -9,16 +9,17 @@ import (
 )
 
 type Post struct {
-	ID        int64     `json:"id"`
-	Content   string    `json:"content"`
-	Title     string    `json:"title"`
-	UserID    int64     `json:"user_id"`
-	Tags      []string  `json:"tags"`
-	CreatedAt string    `json:"created_at"`
-	UpdatedAt string    `json:"updated_at"`
-	Version   int       `json:"version"`
-	Comments  []Comment `json:"comments"`
-	User      User      `json:"user"`
+	ID           int64      `json:"id"`
+	Content      string     `json:"content"`
+	Title        string     `json:"title"`
+	UserID       int64      `json:"user_id"`
+	Tags         []string   `json:"tags"`
+	CreatedAt    string     `json:"created_at"`
+	UpdatedAt    string     `json:"updated_at"`
+	Version      int        `json:"version"`
+	Comments     []*Comment `json:"comments"`
+	CommentCount int        `json:"comment_count"`
+	User         User       `json:"user"`
 }
 
 type PostWithMetadata struct {
@@ -56,37 +57,72 @@ func (s *PostStore) Create(ctx context.Context, post *Post) error {
 }
 
 func (s *PostStore) GetByID(ctx context.Context, id int64) (*Post, error) {
-
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
 	query := `
-	SELECT
-		p.id,
-		p.title,
-		p.user_id,
-		p.content,
-		p.created_at,
-		p.tags,
-		p.updated_at,
-		p.version,
-		u.username
-	FROM posts p
-	JOIN users u ON u.id = p.user_id
-	WHERE p.id = $1
-`
+		SELECT
+			p.id,
+			p.content,
+			p.title,
+			p.user_id,
+			p.tags,
+			p.created_at,
+			p.updated_at,
+			p.version,
+			COUNT(c.id) AS comment_count,
+
+			u.id,
+			u.username,
+			u.email,
+			u.created_at
+
+		FROM posts p
+
+		INNER JOIN users u
+			ON u.id = p.user_id
+
+		LEFT JOIN comments c
+			ON c.post_id = p.id
+
+		WHERE p.id = $1
+
+		GROUP BY
+			p.id,
+			p.content,
+			p.title,
+			p.user_id,
+			p.tags,
+			p.created_at,
+			p.updated_at,
+			p.version,
+			u.id,
+			u.username,
+			u.email,
+			u.created_at
+	`
+
 	var post Post
+
 	err := s.db.QueryRowContext(ctx, query, id).Scan(
+		// Post
 		&post.ID,
+		&post.Content,
 		&post.Title,
 		&post.UserID,
-		&post.Content,
-		&post.CreatedAt,
 		pq.Array(&post.Tags),
+		&post.CreatedAt,
 		&post.UpdatedAt,
 		&post.Version,
+		&post.CommentCount,
+
+		// User
+		&post.User.ID,
 		&post.User.Username,
+		&post.User.Email,
+		&post.User.CreatedAt,
 	)
+
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
@@ -95,9 +131,12 @@ func (s *PostStore) GetByID(ctx context.Context, id int64) (*Post, error) {
 			return nil, err
 		}
 	}
+
+	// Always return an empty array instead of null.
+	post.Comments = make([]*Comment, 0)
+
 	return &post, nil
 }
-
 func (s *PostStore) DeleteByID(ctx context.Context, id int64) error {
 	query := `
 	DELETE FROM posts where id = $1;

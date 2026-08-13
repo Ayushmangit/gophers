@@ -14,6 +14,7 @@ import Profile from "./app/pages/Profile"
 import { useEffect } from "react"
 import { useAppDispatch } from "./app/hooks"
 import { me } from "./app/features/auth/authThunk"
+import RegisterSuccess from "./app/pages/Register-success"
 
 function App() {
   const dispatch = useAppDispatch()
@@ -45,9 +46,13 @@ function App() {
         />
 
         <Route
-          path="/users/activate/:token"
+          path="/activate/:token"
           element={<ActivateUserPage />}
         />
+        <Route
+          path="/register-success"
+          element={<RegisterSuccess />} />
+
 
         {/* Protected */}
 

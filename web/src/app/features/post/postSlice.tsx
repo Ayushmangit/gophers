@@ -54,7 +54,7 @@ const postSlice = createSlice({
 				getFeed.fulfilled,
 				(state, action) => {
 					state.loading = false
-					state.posts = action.payload
+					state.posts = action.payload ?? []
 				},
 			)
 
@@ -225,36 +225,39 @@ const postSlice = createSlice({
 			.addCase(
 				createComment.fulfilled,
 				(state, action) => {
-					const post =
-						state.posts.find(
-							(post) =>
-								post.id ===
-								action.payload
-									.post_id,
-						)
+					const newComment = action.payload
+
+					const post = state.posts.find(
+						(post) => post.id === newComment.post_id
+					)
 
 					if (post) {
-						post.comments.push(
-							action.payload,
-						)
+						// Ensure comments is an array
+						if (!post.comments) {
+							post.comments = []
+						}
 
+						post.comments.push(newComment)
 						post.comment_count += 1
 					}
 
 					if (
 						state.currentPost?.id ===
-						action.payload.post_id
+						newComment.post_id
 					) {
+						// Ensure comments is an array
+						if (!state.currentPost.comments) {
+							state.currentPost.comments = []
+						}
+
 						state.currentPost.comments.push(
-							action.payload,
+							newComment
 						)
 
 						state.currentPost.comment_count += 1
 					}
-				},
-			)
-
-			.addCase(
+				}
+			).addCase(
 				createComment.rejected,
 				(state, action) => {
 					state.error =

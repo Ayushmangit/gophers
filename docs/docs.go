@@ -898,6 +898,9 @@ const docTemplate = `{
         "github_com_Ayushmangit_social_internal_store.Post": {
             "type": "object",
             "properties": {
+                "comment_count": {
+                    "type": "integer"
+                },
                 "comments": {
                     "type": "array",
                     "items": {

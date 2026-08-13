@@ -19,7 +19,7 @@ type CreateCommentPayload struct {
 //	@Produce		json
 //	@Param			postID	path		int						true	"post ID"
 //	@Param			request	body		CreateCommentPayload	true	"comment create payload"
-//	@Success		200		{object}	store.Comment
+//	@Success		201		{object}	store.Comment
 //	@Failure		400		{object}	error
 //	@Failure		404		{object}	error
 //	@Failure		500		{object}	error
@@ -27,7 +27,9 @@ type CreateCommentPayload struct {
 //	@Router			/posts/{postID}/comment [post]
 func (app *application) createCommentHandler(w http.ResponseWriter, r *http.Request) {
 	post := getPostFromCtx(r)
+
 	var payload CreateCommentPayload
+
 	if err := ReadJson(w, r, &payload); err != nil {
 		app.BadRequest(w, r, err)
 		return
@@ -37,6 +39,7 @@ func (app *application) createCommentHandler(w http.ResponseWriter, r *http.Requ
 		app.BadRequest(w, r, err)
 		return
 	}
+
 	user := getUserFromCtx(r)
 
 	comment := &store.Comment{
@@ -44,14 +47,22 @@ func (app *application) createCommentHandler(w http.ResponseWriter, r *http.Requ
 		UserID:  user.ID,
 		Content: payload.Content,
 	}
-	if err := app.store.Comments.Create(r.Context(), comment); err != nil {
+
+	createdComment, err := app.store.Comments.Create(
+		r.Context(),
+		comment,
+	)
+	if err != nil {
 		app.InternalServerError(w, r, err)
 		return
 	}
 
-	if err := app.jsonResponse(w, http.StatusCreated, comment); err != nil {
+	if err := app.jsonResponse(
+		w,
+		http.StatusCreated,
+		createdComment,
+	); err != nil {
 		app.InternalServerError(w, r, err)
 		return
 	}
-
 }
