@@ -27,6 +27,10 @@ func (m *MockUserStore) GetByID(ctx context.Context, userID int64) (*User, error
 	return nil, nil
 }
 
+func (m *MockUserStore) GetByUsername(ctx context.Context, username string) ([]*User, error) {
+	return nil, nil
+}
+
 func (m *MockUserStore) CreateAndInvite(ctx context.Context, user *User, token string, invitationExp time.Duration) error {
 	return nil
 }

@@ -8,10 +8,15 @@ import {
 	followUser,
 	unfollowUser,
 } from "../../app/features/user/userThunk"
+import { logoutUser } from "../features/auth/authThunk"
 
 export default function Profile() {
 	const { userID } = useParams()
 	const dispatch = useAppDispatch()
+
+	function handleLogout() {
+		dispatch(logoutUser())
+	}
 
 	const {
 		profile,
@@ -98,12 +103,16 @@ export default function Profile() {
 						Gopher Social
 					</Link>
 
-					<Link
-						to="/home"
-						className="text-sm font-semibold text-gray-500 hover:text-gray-900"
-					>
-						Home
-					</Link>
+					{isOwnProfile && (
+
+						<Link
+							to="/login"
+							className="text-sm font-semibold text-gray-500 hover:text-gray-900"
+							onClick={handleLogout}
+						>
+							Logout
+						</Link>
+					)}
 				</div>
 			</header>
 

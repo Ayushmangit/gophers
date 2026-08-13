@@ -1,8 +1,11 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/Ayushmangit/social/internal/store"
 	"github.com/go-chi/chi/v5"
@@ -34,6 +37,7 @@ type UserWithMetadata struct {
 func (app *application) getUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	authenticatedUser := getUserFromCtx(r)
+	fmt.Printf("%v", authenticatedUser)
 	userID := chi.URLParam(r, "userID")
 	id, err := strconv.ParseInt(userID, 10, 64)
 	if err != nil {
@@ -100,6 +104,45 @@ func (app *application) followUserHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	if err := app.jsonResponse(w, http.StatusNoContent, ""); err != nil {
+		app.InternalServerError(w, r, err)
+		return
+	}
+}
+
+// searchUsersHandler godoc
+//
+//	@Summary		Search users
+//	@Description	Searches for users by username
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Param			username	query		string	true	"Username to search for"
+//	@Success		200			{array}		store.User
+//	@Failure		400			{object}	error
+//	@Failure		401			{object}	error
+//	@Failure		500			{object}	error
+//	@Security		ApiKeyAuth
+//	@Router			/users/search [get]
+func (app *application) searchUsersHandler(w http.ResponseWriter, r *http.Request) {
+	username := r.URL.Query().Get("username")
+	app.logger.Infow(
+		"searching users",
+		"username",
+		username,
+	)
+	if strings.TrimSpace(username) == "" {
+		app.BadRequest(w, r, errors.New("username is required"))
+		return
+	}
+	users, err := app.store.Users.GetByUsername(r.Context(), username)
+	if err != nil {
+		app.InternalServerError(w, r, err)
+		return
+	}
+	if users == nil {
+		users = []*store.User{}
+	}
+	if err := app.jsonResponse(w, http.StatusOK, users); err != nil {
 		app.InternalServerError(w, r, err)
 		return
 	}

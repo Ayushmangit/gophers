@@ -6,6 +6,7 @@ import {
 	getUser,
 	followUser,
 	unfollowUser,
+	searchUsers,
 } from "./userThunk"
 
 interface UserState {
@@ -13,6 +14,8 @@ interface UserState {
 	loading: boolean
 	error: string | null
 	isFollowing: boolean
+	searchResults: User[]
+	searchLoading: boolean
 }
 
 const initialState: UserState = {
@@ -20,6 +23,8 @@ const initialState: UserState = {
 	loading: false,
 	error: null,
 	isFollowing: false,
+	searchResults: [],
+	searchLoading: false,
 }
 
 const userSlice = createSlice({
@@ -29,6 +34,11 @@ const userSlice = createSlice({
 		clearProfile: (state) => {
 			state.profile = null
 			state.error = null
+		},
+
+		clearSearchResults: (state) => {
+			state.searchResults = []
+			state.searchLoading = false
 		},
 	},
 	extraReducers: (builder) => {
@@ -88,9 +98,26 @@ const userSlice = createSlice({
 					(action.payload as string) ||
 					"Failed to unfollow user"
 			})
+			.addCase(searchUsers.pending, (state) => {
+				state.searchLoading = true
+				state.error = null
+			})
+
+			.addCase(searchUsers.fulfilled, (state, action) => {
+				state.searchLoading = false
+				state.searchResults = action.payload
+			})
+
+			.addCase(searchUsers.rejected, (state, action) => {
+				state.searchLoading = false
+				state.searchResults = []
+				state.error =
+					(action.payload as string) ||
+					"Failed to search users"
+			})
 	},
 })
 
-export const { clearProfile } = userSlice.actions
+export const { clearProfile, clearSearchResults } = userSlice.actions
 
 export default userSlice.reducer

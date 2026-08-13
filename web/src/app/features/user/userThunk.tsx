@@ -70,6 +70,22 @@ export const unfollowUser = createAsyncThunk<
 	}
 )
 
+export const searchUsers = createAsyncThunk(
+	"users/searchUsers",
+	async (username: string, thunkAPI) => {
+		try {
+			const response = await api.get("/users/search", {
+				params: {
+					username,
+				},
+			})
 
-
-
+			return response.data.data
+		} catch (error: any) {
+			return thunkAPI.rejectWithValue(
+				error.response?.data?.message ||
+				"Failed to search users"
+			)
+		}
+	}
+)
