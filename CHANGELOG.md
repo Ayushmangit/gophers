@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.6](https://github.com/Ayushmangit/gophers/compare/v1.1.5...v1.1.6) (2026-08-13)
+
+
+### Features
+
+* user search is enabled now ([96721ec](https://github.com/Ayushmangit/gophers/commit/96721ec35182c7cd7661d830d7b3d302c6cfd029))
+
+
+### Bug Fixes
+
+* Major fixes in Backend comments, posts, i was returning null collections i should never do it again ([5fdea19](https://github.com/Ayushmangit/gophers/commit/5fdea19fb17ef74347a7632709d6864e6a932fa8))
+
 ## [1.1.5](https://github.com/Ayushmangit/gophers/compare/v1.1.4...v1.1.5) (2026-08-11)
 
 
