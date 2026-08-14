@@ -26,6 +26,7 @@ import (
 )
 
 // NOTE: Application is the entry point for the program
+// DEPENDENCY INJECTION
 type application struct {
 	config        config
 	store         store.Storage
@@ -144,6 +145,7 @@ func (app *application) mount() http.Handler {
 			r.Group(func(r chi.Router) {
 				r.Use(app.AuthTokenMiddleware)
 				r.Get("/feed", app.getUserFeedHandler)
+				r.Get("/explore", app.explorePostHandler)
 
 			})
 		})

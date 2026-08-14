@@ -66,6 +66,19 @@ func (app *application) createPostHandler(w http.ResponseWriter, r *http.Request
 	}
 }
 
+func (app *application) explorePostHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	posts, err := app.store.Posts.GetAllPosts(ctx)
+	if err != nil {
+		app.InternalServerError(w, r, err)
+		return
+	}
+	if err := app.jsonResponse(w, http.StatusOK, posts); err != nil {
+		app.InternalServerError(w, r, err)
+		return
+	}
+}
+
 // GetPosts godoc
 //
 //	@Summary		Fetches a post
