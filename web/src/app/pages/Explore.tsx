@@ -3,9 +3,9 @@ import { Link, useNavigate } from "react-router"
 import { Search, UserRound, X } from "lucide-react"
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
-import { getAllPosts } from "../../app/features/post/postThunk"
 import { clearSearchResults } from "../../app/features/user/userSlice"
 import { searchUsers } from "../../app/features/user/userThunk"
+import { getAllPosts } from "../features/explore/exploreThunk"
 
 export default function Explore() {
 	const dispatch = useAppDispatch()
@@ -26,9 +26,8 @@ export default function Explore() {
 		loading,
 		error,
 	} = useAppSelector(
-		(state) => state.posts
+		(state) => state.explore
 	)
-
 	const user = useAppSelector(
 		(state) => state.auth.userData
 	)
