@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.7](https://github.com/Ayushmangit/gophers/compare/v1.1.6...v1.1.7) (2026-08-14)
+
+
+### Features
+
+* added getAllPosts in backend and explore page on the frontend ([00ea1f5](https://github.com/Ayushmangit/gophers/commit/00ea1f598b7211baba4e7fc9dcd81444bc64d297))
+* Adding All posts for explore ([1bb2ae0](https://github.com/Ayushmangit/gophers/commit/1bb2ae00eeeef175a0f76918a6355aa7dc7bcc1f))
+* Explore frontend is showing all the posts , need to add limit and offset later to both the frontend and the backend ([674af25](https://github.com/Ayushmangit/gophers/commit/674af2554372047e6570668f6ec99a12bb71b1d1))
+
 ## [1.1.6](https://github.com/Ayushmangit/gophers/compare/v1.1.5...v1.1.6) (2026-08-13)
 
 
