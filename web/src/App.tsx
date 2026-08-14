@@ -15,6 +15,7 @@ import { useEffect } from "react"
 import { useAppDispatch } from "./app/hooks"
 import { me } from "./app/features/auth/authThunk"
 import RegisterSuccess from "./app/pages/Register-success"
+import Explore from "./app/pages/Explore"
 
 function App() {
   const dispatch = useAppDispatch()
@@ -64,6 +65,15 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/explore"
+          element={
+            <ProtectedRoute>
+              <Explore />
+            </ProtectedRoute>
+          }
+        />
+
 
         <Route
           path="/posts/create"

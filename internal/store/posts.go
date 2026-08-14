@@ -241,3 +241,65 @@ func (s *PostStore) GetUserFeed(ctx context.Context, userID int64, fq PaginatedF
 
 	return feed, nil
 }
+
+// TODO: Add pagination on this
+func (s *PostStore) GetAllPosts(ctx context.Context) ([]*PostWithMetadata, error) {
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
+	query := `
+	SELECT
+		p.id,
+		p.user_id,
+		p.title,
+		p.content,
+		p.created_at,
+		p.version,
+		p.tags,
+		u.username,
+		count(c.id) AS comments_count
+    FROM posts p
+	LEFT JOIN  users u ON p.user_id = u.id
+LEFT JOIN comments c ON p.id = c.post_id
+GROUP BY
+    p.id,
+    p.user_id,
+    p.title,
+    p.content,
+    p.created_at,
+    p.version,
+    p.tags,
+    u.username
+ORDER BY p.created_at DESC
+`
+
+	rows, err := s.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	posts := make([]*PostWithMetadata, 0)
+	for rows.Next() {
+		var post PostWithMetadata
+		err := rows.Scan(
+			&post.ID,
+			&post.UserID,
+			&post.Title,
+			&post.Content,
+			&post.CreatedAt,
+			&post.Version,
+			pq.Array(&post.Tags),
+			&post.User.Username,
+			&post.CommentCount,
+		)
+		if err != nil {
+			return nil, err
+		}
+		posts = append(posts, &post)
+
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return posts, nil
+}

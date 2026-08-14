@@ -47,7 +47,7 @@ func (s *CommentStore) GetByPostID(ctx context.Context, postID int64) ([]*Commen
 			&c.User.Username,
 			&c.User.ID)
 		if err != nil {
-			return nil, err
+			return comments, err
 		}
 		comments = append(comments, &c)
 	}

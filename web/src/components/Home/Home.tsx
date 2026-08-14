@@ -33,6 +33,10 @@ export default function Home() {
     (state) => state.auth.userData
   )
 
+  /*
+   * Search users
+   */
+
   useEffect(() => {
     if (!searchQuery.trim()) {
       dispatch(clearSearchResults())
@@ -46,6 +50,10 @@ export default function Home() {
     return () => clearTimeout(timeout)
   }, [searchQuery, dispatch])
 
+  /*
+   * Get user's feed
+   */
+
   useEffect(() => {
     dispatch(
       getFeed({
@@ -55,7 +63,6 @@ export default function Home() {
       })
     )
   }, [dispatch])
-
 
   function openSearch() {
     setSearchOpen(true)
@@ -75,24 +82,32 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
 
+      {/* ================= HEADER ================= */}
 
-      <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/95 backdrop-blur">
+      <header className="sticky top-0 z-20 border-b border-gray-200 bg-white/95 backdrop-blur">
 
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
 
+          {/* Brand */}
 
           <Link
             to="/home"
             className="text-xl font-extrabold tracking-tight text-gray-900"
           >
-            Welcome {user?.username}
+            Home
           </Link>
 
+          {/* Actions */}
+
           <div className="flex items-center gap-3">
+
+
+            {/* Search */}
 
             <div className="relative">
 
               {!searchOpen ? (
+
                 <button
                   onClick={openSearch}
                   className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-600 transition hover:bg-gray-200"
@@ -100,10 +115,10 @@ export default function Home() {
                 >
                   <Search size={20} />
                 </button>
-              ) : (
-                <div className="flex items-center gap-2">
 
-                  {/* Search input */}
+              ) : (
+
+                <div className="flex items-center gap-2">
 
                   <div className="relative">
 
@@ -123,15 +138,19 @@ export default function Home() {
                       className="h-10 w-64 rounded-full border border-gray-200 bg-gray-100 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-gray-400 focus:bg-white"
                     />
 
-                    {/* Search dropdown */}
+
+                    {/* Search Dropdown */}
 
                     {searchQuery.trim() && (
+
                       <div className="absolute left-0 top-12 z-50 w-80 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl">
 
                         {/* Loading */}
 
                         {searchLoading && (
+
                           <div className="px-4 py-4 text-sm text-gray-500">
+
                             <div className="flex items-center gap-3">
 
                               <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-800" />
@@ -141,22 +160,32 @@ export default function Home() {
                               </span>
 
                             </div>
+
                           </div>
+
                         )}
+
+                        {/* No results */}
 
                         {!searchLoading &&
                           searchResults.length === 0 && (
+
                             <div className="px-4 py-4 text-sm text-gray-500">
                               No users found
                             </div>
+
                           )}
+
+                        {/* Results */}
 
                         {!searchLoading &&
                           searchResults.length > 0 && (
+
                             <div className="py-2">
 
                               {searchResults.map(
                                 (searchUser) => (
+
                                   <button
                                     key={searchUser.id}
                                     onClick={() =>
@@ -166,7 +195,6 @@ export default function Home() {
                                     }
                                     className="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-gray-50"
                                   >
-
 
                                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600">
                                       <UserRound
@@ -184,23 +212,28 @@ export default function Home() {
                                       </p>
 
                                       {searchUser.email && (
+
                                         <p className="truncate text-xs text-gray-400">
                                           {
                                             searchUser.email
                                           }
                                         </p>
+
                                       )}
 
                                     </div>
 
                                   </button>
+
                                 )
                               )}
 
                             </div>
+
                           )}
 
                       </div>
+
                     )}
 
                   </div>
@@ -214,18 +247,33 @@ export default function Home() {
                   </button>
 
                 </div>
+
               )}
 
             </div>
 
+            {/* Explore */}
+
+            <Link
+              to="/explore"
+              className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100"
+            >
+              Explore
+            </Link>
+
+            {/* Create Post */}
+
             <Link
               to="/posts/create"
-              className="rounded-xl bg-gray-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+              className="rounded-xl bg-gray-800 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-700"
             >
               Create Post
             </Link>
 
+            {/* Profile */}
+
             {user && (
+
               <Link
                 to={`/profile/${user.id}`}
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-700 transition hover:bg-gray-200"
@@ -233,6 +281,7 @@ export default function Home() {
               >
                 <UserRound size={20} />
               </Link>
+
             )}
 
           </div>
@@ -241,7 +290,11 @@ export default function Home() {
 
       </header>
 
+      {/* ================= MAIN ================= */}
+
       <main className="mx-auto max-w-3xl px-4 py-10">
+
+        {/* Heading */}
 
         <div className="mb-8">
 
@@ -255,7 +308,10 @@ export default function Home() {
 
         </div>
 
+        {/* ================= LOADING ================= */}
+
         {loading && (
+
           <div className="rounded-3xl bg-white p-10 text-center shadow-sm">
 
             <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-black" />
@@ -265,9 +321,13 @@ export default function Home() {
             </p>
 
           </div>
+
         )}
 
+        {/* ================= ERROR ================= */}
+
         {error && !loading && (
+
           <div className="rounded-3xl border border-red-200 bg-red-50 p-6">
 
             <h2 className="font-bold text-red-700">
@@ -288,17 +348,21 @@ export default function Home() {
                   })
                 )
               }
-              className="mt-4 rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700"
+              className="mt-4 rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
             >
               Try Again
             </button>
 
           </div>
+
         )}
+
+        {/* ================= EMPTY ================= */}
 
         {!loading &&
           !error &&
           posts.length === 0 && (
+
             <div className="rounded-3xl bg-white p-10 text-center shadow-sm">
 
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-2xl">
@@ -316,23 +380,31 @@ export default function Home() {
 
               <Link
                 to="/posts/create"
-                className="mt-6 inline-block rounded-full bg-black px-6 py-3 font-semibold text-white hover:bg-gray-800"
+                className="mt-6 inline-block rounded-full bg-gray-900 px-6 py-3 font-semibold text-white transition hover:bg-gray-800"
               >
                 Create Your First Post
               </Link>
 
             </div>
+
           )}
 
+        {/* ================= POSTS ================= */}
+
         {!loading &&
+          !error &&
           posts.length > 0 && (
+
             <div className="space-y-6">
 
               {posts.map((post) => (
+
                 <article
                   key={post.id}
                   className="rounded-3xl bg-white p-6 shadow-sm transition hover:shadow-md"
                 >
+
+                  {/* Author */}
 
                   <div className="flex items-center justify-between">
 
@@ -347,7 +419,7 @@ export default function Home() {
 
                       <div>
 
-                        <p className="font-semibold text-gray-900 hover:text-blue-600">
+                        <p className="font-semibold text-gray-900 transition hover:text-blue-600">
                           @{post.user.username}
                         </p>
 
@@ -370,6 +442,8 @@ export default function Home() {
 
                   </div>
 
+                  {/* Content */}
+
                   <Link
                     to={`/posts/${post.id}`}
                     className="block"
@@ -385,26 +459,34 @@ export default function Home() {
 
                   </Link>
 
+                  {/* Tags */}
+
                   {post.tags.length > 0 && (
+
                     <div className="mt-5 flex flex-wrap gap-2">
 
                       {post.tags.map((tag) => (
+
                         <span
                           key={tag}
                           className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-600"
                         >
                           #{tag}
                         </span>
+
                       ))}
 
                     </div>
+
                   )}
+
+                  {/* Footer */}
 
                   <div className="mt-6 flex items-center justify-between border-t border-gray-100 pt-4">
 
                     <Link
                       to={`/posts/${post.id}`}
-                      className="text-sm font-semibold text-gray-500 hover:text-gray-900"
+                      className="text-sm font-semibold text-gray-500 transition hover:text-gray-900"
                     >
                       {post.comment_count === 1
                         ? "1 comment"
@@ -413,7 +495,7 @@ export default function Home() {
 
                     <Link
                       to={`/posts/${post.id}`}
-                      className="text-sm font-semibold text-gray-500 hover:text-gray-900"
+                      className="text-sm font-semibold text-gray-500 transition hover:text-gray-900"
                     >
                       Read post →
                     </Link>
@@ -421,9 +503,11 @@ export default function Home() {
                   </div>
 
                 </article>
+
               ))}
 
             </div>
+
           )}
 
       </main>

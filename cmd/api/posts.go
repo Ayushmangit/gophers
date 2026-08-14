@@ -66,6 +66,19 @@ func (app *application) createPostHandler(w http.ResponseWriter, r *http.Request
 	}
 }
 
+//	Explore godoc
+//
+// @Summary		Fetches all posts
+// @Description	Fetches all posts
+// @Tags			feed
+// @Accept			json
+// @Produce		json
+// @Success		200	{array}		store.PostWithMetadata
+// @Failure		400	{object}	error
+// @Failure		404	{object}	error
+// @Failure		500	{object}	error
+// @Security		ApiKeyAuth
+// @Router			/users/explore [get]
 func (app *application) explorePostHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	posts, err := app.store.Posts.GetAllPosts(ctx)

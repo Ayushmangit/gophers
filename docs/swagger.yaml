@@ -574,6 +574,34 @@ paths:
       summary: Activates/Register a user
       tags:
       - users
+  /users/explore:
+    get:
+      consumes:
+      - application/json
+      description: Fetches all posts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_Ayushmangit_social_internal_store.PostWithMetadata'
+            type: array
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Fetches all posts
+      tags:
+      - feed
   /users/feed:
     get:
       consumes:
