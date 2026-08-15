@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.8](https://github.com/Ayushmangit/gophers/compare/v1.1.7...v1.1.8) (2026-08-15)
+
+
+### Features
+
+* explore and home done with infinity scroll with pagination ([9b6edb6](https://github.com/Ayushmangit/gophers/commit/9b6edb6bcfd234661562968680e3b22713467d83))
+
+
+### Bug Fixes
+
+* forgot to remove the explore from posts ([ae24941](https://github.com/Ayushmangit/gophers/commit/ae249411685d59b247121992968cc1a0bac273bf))
+
 ## [1.1.7](https://github.com/Ayushmangit/gophers/compare/v1.1.6...v1.1.7) (2026-08-14)
 
 
