@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.9](https://github.com/Ayushmangit/gophers/compare/v1.1.8...v1.1.9) (2026-08-15)
+
+
+### Bug Fixes
+
+* explore fix ([a5db4a8](https://github.com/Ayushmangit/gophers/commit/a5db4a8f675996f3b13385189946a008f4e4c6b5))
+
 ## [1.1.8](https://github.com/Ayushmangit/gophers/compare/v1.1.7...v1.1.8) (2026-08-15)
 
 
