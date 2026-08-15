@@ -19,11 +19,11 @@ var (
 type Storage struct {
 	Posts interface {
 		Create(context.Context, *Post) error
-		GetAllPosts(context.Context) ([]*PostWithMetadata, error)
+		GetAllPosts(context.Context, PaginatedQuery) ([]*PostWithMetadata, error)
 		GetByID(context.Context, int64) (*Post, error)
 		DeleteByID(context.Context, int64) error
 		Update(context.Context, *Post) error
-		GetUserFeed(context.Context, int64, PaginatedFeedQuery) ([]PostWithMetadata, error)
+		GetUserFeed(context.Context, int64, PaginatedQuery) ([]PostWithMetadata, error)
 	}
 	Users interface {
 		Create(context.Context, *sql.Tx, *User) error

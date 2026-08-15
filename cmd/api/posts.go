@@ -66,7 +66,7 @@ func (app *application) createPostHandler(w http.ResponseWriter, r *http.Request
 	}
 }
 
-//	Explore godoc
+// Explore godoc
 //
 // @Summary		Fetches all posts
 // @Description	Fetches all posts
@@ -81,7 +81,20 @@ func (app *application) createPostHandler(w http.ResponseWriter, r *http.Request
 // @Router			/users/explore [get]
 func (app *application) explorePostHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	posts, err := app.store.Posts.GetAllPosts(ctx)
+	limit := r.URL.Query().Get("limit")
+	limitInt, err := strconv.ParseInt(limit, 10, 64)
+	if err != nil {
+		app.BadRequest(w, r, err)
+		return
+	}
+	offset := r.URL.Query().Get("offset")
+	offsetInt, err := strconv.ParseInt(offset, 10, 64)
+	if err != nil {
+		app.BadRequest(w, r, err)
+		return
+	}
+
+	posts, err := app.store.Posts.GetAllPosts(ctx, limitInt, offsetInt)
 	if err != nil {
 		app.InternalServerError(w, r, err)
 		return

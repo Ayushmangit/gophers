@@ -59,8 +59,8 @@ export interface CreateComment {
 export interface FeedQuery {
 	since?: string
 	until?: string
-	limit?: number
-	offset?: number
+	limit: number
+	offset: number
 	sort?: "asc" | "desc"
 	tags?: string
 	search?: string

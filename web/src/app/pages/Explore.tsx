@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { Link, useNavigate } from "react-router"
 import { Search, UserRound, X } from "lucide-react"
 
@@ -14,17 +14,21 @@ export default function Explore() {
 	const [searchOpen, setSearchOpen] = useState(false)
 	const [searchQuery, setSearchQuery] = useState("")
 
+	const loadMoreRef = useRef<HTMLDivElement | null>(null)
+
+	const limit = 20
+
 	const {
 		searchResults,
 		searchLoading,
 	} = useAppSelector(
-		(state) => state.users
-	)
-
+		(state) => state.users)
 	const {
 		posts,
 		loading,
 		error,
+		hasMore,
+		loadingMore
 	} = useAppSelector(
 		(state) => state.explore
 	)
@@ -32,9 +36,58 @@ export default function Explore() {
 		(state) => state.auth.userData
 	)
 
-	/*
-	 * Search users
-	 */
+	useEffect(() => {
+		dispatch(getAllPosts({
+			limit,
+			offset: 0,
+		}))
+	}, [dispatch])
+
+
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				const entry = entries[0]
+
+				if (
+					entry.isIntersecting &&
+					!loading &&
+					!loadingMore &&
+					hasMore
+				) {
+					dispatch(
+						getAllPosts({
+							limit: 20,
+							offset: posts.length,
+						})
+					)
+				}
+			},
+			{
+				rootMargin: "300px",
+			}
+		)
+
+		const element = loadMoreRef.current
+
+		if (element) {
+			observer.observe(element)
+		}
+
+		return () => {
+			if (element) {
+				observer.unobserve(element)
+			}
+		}
+	}, [
+		dispatch,
+		posts.length,
+		loading,
+		loadingMore,
+		hasMore,
+	])
+
+
 
 	useEffect(() => {
 		if (!searchQuery.trim()) {
@@ -48,14 +101,6 @@ export default function Explore() {
 
 		return () => clearTimeout(timeout)
 	}, [searchQuery, dispatch])
-
-	/*
-	 * Get ALL posts
-	 */
-
-	useEffect(() => {
-		dispatch(getAllPosts())
-	}, [dispatch])
 
 	function openSearch() {
 		setSearchOpen(true)
@@ -71,6 +116,7 @@ export default function Explore() {
 		closeSearch()
 		navigate(`/profile/${userId}`)
 	}
+
 
 	return (
 		<div className="min-h-screen bg-gray-50">
@@ -252,15 +298,6 @@ export default function Explore() {
 							Home
 						</Link>
 
-						{/* Create Post */}
-
-						<Link
-							to="/posts/create"
-							className="rounded-xl bg-gray-800 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-700"
-						>
-							Create Post
-						</Link>
-
 						{/* Profile */}
 
 						{user && (
@@ -331,7 +368,7 @@ export default function Explore() {
 
 						<button
 							onClick={() =>
-								dispatch(getAllPosts())
+								dispatch(getAllPosts({ limit: 20, offset: 0 }))
 							}
 							className="mt-4 rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
 						>
@@ -494,7 +531,34 @@ export default function Explore() {
 						</div>
 
 					)}
+				<div
+					ref={loadMoreRef}
+					className="flex min-h-24 items-center justify-center"
+				>
 
+					{/* Loading next page */}
+
+					{loadingMore && (
+						<div className="flex items-center gap-3 text-sm text-gray-500">
+
+							<div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-200 border-t-gray-900" />
+
+							<span>
+								Loading more posts...
+							</span>
+
+						</div>
+					)}
+
+					{/* No more posts */}
+
+					{!loadingMore && !hasMore && (
+						<p className="text-sm text-gray-400">
+							You've reached the end.
+						</p>
+					)}
+
+				</div>
 			</main>
 
 		</div>

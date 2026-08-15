@@ -188,7 +188,7 @@ func (s *PostStore) Update(ctx context.Context, post *Post) error {
 	return nil
 }
 
-func (s *PostStore) GetUserFeed(ctx context.Context, userID int64, fq PaginatedFeedQuery) ([]PostWithMetadata, error) {
+func (s *PostStore) GetUserFeed(ctx context.Context, userID int64, fq PaginatedQuery) ([]PostWithMetadata, error) {
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 	query := `
@@ -243,23 +243,25 @@ func (s *PostStore) GetUserFeed(ctx context.Context, userID int64, fq PaginatedF
 }
 
 // TODO: Add pagination on this
-func (s *PostStore) GetAllPosts(ctx context.Context) ([]*PostWithMetadata, error) {
+func (s *PostStore) GetAllPosts(ctx context.Context, fq PaginatedQuery) ([]*PostWithMetadata, error) {
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 	query := `
 	SELECT
-		p.id,
-		p.user_id,
-		p.title,
-		p.content,
-		p.created_at,
-		p.version,
-		p.tags,
-		u.username,
-		count(c.id) AS comments_count
-    FROM posts p
-	LEFT JOIN  users u ON p.user_id = u.id
-LEFT JOIN comments c ON p.id = c.post_id
+    p.id,
+    p.user_id,
+    p.title,
+    p.content,
+    p.created_at,
+    p.version,
+    p.tags,
+    u.username,
+    COUNT(c.id) AS comments_count
+FROM posts p
+LEFT JOIN users u
+    ON p.user_id = u.id
+LEFT JOIN comments c
+    ON p.id = c.post_id
 GROUP BY
     p.id,
     p.user_id,
@@ -270,9 +272,10 @@ GROUP BY
     p.tags,
     u.username
 ORDER BY p.created_at DESC
-`
+LIMIT $1
+OFFSET $2`
 
-	rows, err := s.db.QueryContext(ctx, query)
+	rows, err := s.db.QueryContext(ctx, query, fq.Limit, fq.Offset)
 	if err != nil {
 		return nil, err
 	}

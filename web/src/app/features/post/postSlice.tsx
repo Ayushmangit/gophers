@@ -14,6 +14,8 @@ interface PostState {
 	posts: Post[]
 	currentPost: Post | null
 	loading: boolean
+	loadingMore: boolean
+	hasMore: boolean
 	error: string | null
 }
 
@@ -22,6 +24,8 @@ const initialState: PostState = {
 	currentPost: null,
 	loading: false,
 	error: null,
+	hasMore: true,
+	loadingMore: false
 }
 
 const postSlice = createSlice({
@@ -45,16 +49,27 @@ const postSlice = createSlice({
 			// GET FEED
 			// =========================
 
-			.addCase(getFeed.pending, (state) => {
-				state.loading = true
+			.addCase(getFeed.pending, (state, action) => {
 				state.error = null
+				if (action.meta.arg.offset === 0) {
+					state.loading = true
+				} else {
+					state.loadingMore = true
+				}
 			})
 
 			.addCase(
 				getFeed.fulfilled,
 				(state, action) => {
+					const posts = action.payload ?? []
 					state.loading = false
-					state.posts = action.payload ?? []
+					state.loadingMore = false
+					if (action.meta.arg.offset === 0) {
+						state.posts = posts
+					} else {
+						state.posts.push(...posts)
+					}
+					state.hasMore = posts.length === 20
 				},
 			)
 
@@ -62,6 +77,7 @@ const postSlice = createSlice({
 				getFeed.rejected,
 				(state, action) => {
 					state.loading = false
+					state.loadingMore = false
 					state.error =
 						action.payload ||
 						"Failed to load feed"

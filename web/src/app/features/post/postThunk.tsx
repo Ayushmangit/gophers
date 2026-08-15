@@ -11,7 +11,7 @@ import type {
 
 export const getFeed = createAsyncThunk<
 	Post[],
-	FeedQuery | undefined,
+	FeedQuery,
 	{ rejectValue: string }
 >(
 	"posts/getFeed",
@@ -23,7 +23,7 @@ export const getFeed = createAsyncThunk<
 					params: {
 						since: query?.since,
 						until: query?.until,
-						limit: query?.limit ?? 40,
+						limit: query?.limit ?? 20,
 						offset: query?.offset ?? 0,
 						sort: query?.sort ?? "desc",
 						tags: query?.tags,
