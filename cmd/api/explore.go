@@ -8,17 +8,17 @@ import (
 
 // Explore godoc
 //
-// @Summary		Fetches all posts
-// @Description	Fetches all posts
-// @Tags			feed
-// @Accept			json
-// @Produce		json
-// @Success		200	{array}		store.PostWithMetadata
-// @Failure		400	{object}	error
-// @Failure		404	{object}	error
-// @Failure		500	{object}	error
-// @Security		ApiKeyAuth
-// @Router			/users/explore [get]
+//	@Summary		Fetches all posts
+//	@Description	Fetches all posts
+//	@Tags			feed
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{array}		store.PostWithMetadata
+//	@Failure		400	{object}	error
+//	@Failure		404	{object}	error
+//	@Failure		500	{object}	error
+//	@Security		ApiKeyAuth
+//	@Router			/users/explore [get]
 func (app *application) explorePostHandler(w http.ResponseWriter, r *http.Request) {
 	fq := store.PaginatedQuery{
 		Limit:  20,
