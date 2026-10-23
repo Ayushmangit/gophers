@@ -29,7 +29,6 @@ func (m *SendGridMailer) Send(templateFile, username, email string, data any, is
 	from := mail.NewEmail(FromName, m.fromEmail)
 	to := mail.NewEmail(username, email)
 
-	//NOTE:Template parsing
 	tmpl, err := template.ParseFS(FS, "templates/"+templateFile)
 	if err != nil {
 		return -1, err
@@ -55,7 +54,7 @@ func (m *SendGridMailer) Send(templateFile, username, email string, data any, is
 	for i := range maxRetries {
 		res, retryErr := m.client.Send(message)
 		if retryErr != nil {
-			//NOTE:Exponential backoff
+			// NOTE:Exponential backoff
 			time.Sleep(time.Second * time.Duration(i+1))
 			continue
 		}
@@ -65,5 +64,4 @@ func (m *SendGridMailer) Send(templateFile, username, email string, data any, is
 		return res.StatusCode, nil
 	}
 	return -1, fmt.Errorf("failed to send email after %d attempts,error: %v", maxRetries, retryErr)
-
 }

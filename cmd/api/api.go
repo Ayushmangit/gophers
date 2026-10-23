@@ -106,7 +106,7 @@ func (app *application) mount() http.Handler {
 	r.Use(app.RateLimiterMiddleware)
 
 	r.Route("/v1", func(r chi.Router) {
-		//NOTE: consume the auth middleware like this
+		// NOTE: consume the auth middleware like this
 		// r.With(app.BasicAuthMiddleware()).Get("/health", app.healthCheckHandler)
 		r.Get("/health", app.healthCheckHandler)
 		r.With(app.BasicAuthMiddleware()).Get("/debug/vars", expvar.Handler().ServeHTTP)
@@ -146,23 +146,21 @@ func (app *application) mount() http.Handler {
 				r.Use(app.AuthTokenMiddleware)
 				r.Get("/feed", app.getUserFeedHandler)
 				r.Get("/explore", app.explorePostHandler)
-
 			})
 		})
 
-		//NOTE:Public ROUTE
+		// NOTE:Public ROUTE
 		r.Route("/authentication", func(r chi.Router) {
 			r.Post("/user", app.registerUserHandler)
 			r.Post("/token", app.createTokenHandler)
 			r.With(app.AuthTokenMiddleware).Get("/me", app.getLoggedInUserHandler)
 		})
-
 	})
 	return r
 }
 
 func (app *application) run(mux http.Handler) error {
-	//NOTE: swagger docs
+	// NOTE: swagger docs
 	docs.SwaggerInfo.Version = version
 	docs.SwaggerInfo.Host = app.config.apiURL
 	docs.SwaggerInfo.BasePath = "/v1"

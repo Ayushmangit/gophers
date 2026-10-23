@@ -32,7 +32,6 @@ type PostStore struct {
 }
 
 func (s *PostStore) Create(ctx context.Context, post *Post) error {
-
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 	query := `
@@ -122,7 +121,6 @@ func (s *PostStore) GetByID(ctx context.Context, id int64) (*Post, error) {
 		&post.User.Email,
 		&post.User.CreatedAt,
 	)
-
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
@@ -137,6 +135,7 @@ func (s *PostStore) GetByID(ctx context.Context, id int64) (*Post, error) {
 
 	return &post, nil
 }
+
 func (s *PostStore) DeleteByID(ctx context.Context, id int64) error {
 	query := `
 	DELETE FROM posts where id = $1;
@@ -161,7 +160,6 @@ func (s *PostStore) DeleteByID(ctx context.Context, id int64) error {
 }
 
 func (s *PostStore) Update(ctx context.Context, post *Post) error {
-
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
@@ -242,7 +240,6 @@ func (s *PostStore) GetUserFeed(ctx context.Context, userID int64, fq PaginatedQ
 	return feed, nil
 }
 
-// TODO: Add pagination on this
 func (s *PostStore) GetAllPosts(ctx context.Context, fq PaginatedQuery) ([]*PostWithMetadata, error) {
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()

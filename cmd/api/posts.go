@@ -81,7 +81,6 @@ func (app *application) createPostHandler(w http.ResponseWriter, r *http.Request
 //	@Security		ApiKeyAuth
 //	@Router			/posts/{postID} [get]
 func (app *application) getPostHandler(w http.ResponseWriter, r *http.Request) {
-
 	post := getPostFromCtx(r)
 
 	comments, err := app.store.Comments.GetByPostID(r.Context(), post.ID)
@@ -96,7 +95,6 @@ func (app *application) getPostHandler(w http.ResponseWriter, r *http.Request) {
 		app.InternalServerError(w, r, err)
 		return
 	}
-
 }
 
 // DeletePost godoc
@@ -186,7 +184,6 @@ func (app *application) updatePostHandler(w http.ResponseWriter, r *http.Request
 
 func (app *application) postsContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 		idParams := chi.URLParam(r, "postID")
 		id, err := strconv.ParseInt(idParams, 10, 64)
 		if err != nil {
@@ -208,7 +205,6 @@ func (app *application) postsContextMiddleware(next http.Handler) http.Handler {
 		}
 		ctx = context.WithValue(ctx, postCtx, post)
 		next.ServeHTTP(w, r.WithContext(ctx))
-
 	})
 }
 

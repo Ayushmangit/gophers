@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Ayushmangit/social/internal/mailer"
 	"github.com/Ayushmangit/social/internal/store"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -58,19 +57,19 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	var user = &store.User{
+	user := &store.User{
 		Username: payload.Username,
 		Email:    payload.Email,
 		Role: store.Role{
 			Name: "user",
 		},
 	}
-	//Hash the user password
+	// Hash the user password
 	if err := user.Password.Set(payload.Password); err != nil {
 		app.InternalServerError(w, r, err)
 		return
 	}
-	//NOTE: token hashing
+	// NOTE: token hashing
 	plainToken := uuid.New().String()
 	hash := sha256.Sum256([]byte(plainToken))
 	hashToken := hex.EncodeToString(hash[:])
@@ -93,29 +92,27 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		Token: plainToken,
 	}
 
-	// send mail
-
-	isProdEnv := app.config.env == "production"
-	activationURL := fmt.Sprintf("%s/activate/%s", app.config.frontendURL, plainToken)
-	vars := struct {
-		Username      string
-		ActivationURL string
-	}{
-		Username:      user.Username,
-		ActivationURL: activationURL,
-	}
-
-	status, err := app.mailer.Send(mailer.UserWelcomeTemplate, user.Username, user.Email, vars, !isProdEnv)
-	if err != nil {
-		app.logger.Errorw("error sending welcome email", "error", err)
-		//NOTE:ROLLBACK USING SAGA PATTERN
-		if err := app.store.Users.Delete(ctx, user.ID); err != nil {
-			app.logger.Errorw("error deleting the user", "error", err)
-		}
-		app.InternalServerError(w, r, err)
-		return
-	}
-	app.logger.Infow("Email sent", "status code", status)
+	// isProdEnv := app.config.env == "production"
+	// activationURL := fmt.Sprintf("%s/activate/%s", app.config.frontendURL, plainToken)
+	// vars := struct {
+	// 	Username      string
+	// 	ActivationURL string
+	// }{
+	// 	Username:      user.Username,
+	// 	ActivationURL: activationURL,
+	// }
+	//
+	// status, err := app.mailer.Send(mailer.UserWelcomeTemplate, user.Username, user.Email, vars, !isProdEnv)
+	// if err != nil {
+	// 	app.logger.Errorw("error sending welcome email", "error", err)
+	// 	// NOTE:ROLLBACK USING SAGA PATTERN
+	// 	if err := app.store.Users.Delete(ctx, user.ID); err != nil {
+	// 		app.logger.Errorw("error deleting the user", "error", err)
+	// 	}
+	// 	app.InternalServerError(w, r, err)
+	// 	return
+	// }
+	// app.logger.Infow("Email sent", "status code", status)
 
 	if err := app.jsonResponse(w, http.StatusCreated, userWithToken); err != nil {
 		app.InternalServerError(w, r, err)
@@ -153,12 +150,12 @@ func (app *application) createTokenHandler(w http.ResponseWriter, r *http.Reques
 		app.BadRequest(w, r, err)
 		return
 	}
-	//fetch the user (check if the user exists)
+	// fetch the user (check if the user exists)
 	user, err := app.store.Users.GetByEmail(ctx, payload.Email)
 	if err != nil {
 		switch err {
 		case store.ErrNotFound:
-			//NOTE: always return unauthorized if no user exist
+			// NOTE: always return unauthorized if no user exist
 			app.UnAuthorized(w, r, err)
 		default:
 			app.InternalServerError(w, r, err)
@@ -170,7 +167,7 @@ func (app *application) createTokenHandler(w http.ResponseWriter, r *http.Reques
 		app.UnAuthorized(w, r, err)
 		return
 	}
-	//NOTE:generate the token -> add claims
+	// NOTE:generate the token -> add claims
 	claims := jwt.MapClaims{
 		"sub": user.ID,
 		"exp": time.Now().Add(app.config.auth.token.exp).Unix(),
@@ -185,12 +182,12 @@ func (app *application) createTokenHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	var response = &AuthenticateTokenResponse{
+	response := &AuthenticateTokenResponse{
 		user,
 		access_token,
 	}
 
-	//send it to the client
+	// send it to the client
 	if err := app.jsonResponse(w, http.StatusCreated, response); err != nil {
 		app.InternalServerError(w, r, err)
 		return
