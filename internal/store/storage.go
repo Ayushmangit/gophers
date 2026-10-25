@@ -46,6 +46,20 @@ type Storage struct {
 	Roles interface {
 		GetByName(context.Context, string) (*Role, error)
 	}
+	Messages interface {
+		CreateConversation(ctx context.Context, userID, otherUserID int64) (*Conversation, error)
+		GetConversationsByUserID(ctx context.Context, userID int64) ([]*Conversation, error)
+		GetMessagesByConversationID(
+			ctx context.Context,
+			conversationID, userID int64,
+			limit, beforeID int64,
+		) ([]*Message, error)
+		CreateMessage(ctx context.Context, message *Message) error
+		GetOtherParticipantID(
+			ctx context.Context,
+			conversationID, userID int64,
+		) (int64, error)
+	}
 }
 
 func NewStorage(db *sql.DB) Storage {
@@ -55,6 +69,7 @@ func NewStorage(db *sql.DB) Storage {
 		Comments:  &CommentStore{db},
 		Followers: &FollowerStore{db},
 		Roles:     &RoleStore{db},
+		Messages:  &MessageStore{db},
 	}
 }
 

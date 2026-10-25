@@ -18,6 +18,7 @@ import (
 	"github.com/Ayushmangit/social/internal/ratelimiter"
 	"github.com/Ayushmangit/social/internal/store"
 	"github.com/Ayushmangit/social/internal/store/cache"
+	ws "github.com/Ayushmangit/social/internal/websocket"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -35,6 +36,7 @@ type application struct {
 	mailer        mailer.Client
 	authenticator auth.Authenticator
 	rateLimiter   ratelimiter.Limiter
+	hub           *ws.Hub
 }
 type dbConfig struct {
 	addr         string
@@ -102,7 +104,7 @@ func (app *application) mount() http.Handler {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	r.Use(middleware.Timeout(time.Second * 60))
+	// r.Use(middleware.Timeout(time.Second * 60))
 	r.Use(app.RateLimiterMiddleware)
 
 	r.Route("/v1", func(r chi.Router) {
@@ -149,6 +151,22 @@ func (app *application) mount() http.Handler {
 			})
 		})
 
+		r.Route("/conversations", func(r chi.Router) {
+			r.Use(app.AuthTokenMiddleware)
+
+			r.Post("/", app.createConversationHandler)
+			r.Get("/", app.getConversationsHandler)
+
+			r.Route("/{conversationID}/messages", func(r chi.Router) {
+				r.Get("/", app.getConversationMessagesHandler)
+				r.Post("/", app.createMessageHandler)
+			})
+		})
+
+		r.With(app.AuthTokenMiddleware).
+			Post("/ws/ticket", app.createWebSocketTicketHandler)
+		r.Get("/ws", app.webSocketHandler)
+
 		// NOTE:Public ROUTE
 		r.Route("/authentication", func(r chi.Router) {
 			r.Post("/user", app.registerUserHandler)
@@ -166,11 +184,10 @@ func (app *application) run(mux http.Handler) error {
 	docs.SwaggerInfo.BasePath = "/v1"
 
 	srv := &http.Server{
-		Addr:         app.config.addr,
-		Handler:      mux,
-		WriteTimeout: time.Second * 30,
-		ReadTimeout:  time.Second * 10,
-		IdleTimeout:  time.Minute,
+		Addr:        app.config.addr,
+		Handler:     mux,
+		ReadTimeout: time.Second * 10,
+		IdleTimeout: time.Minute,
 	}
 
 	shutdown := make(chan error)

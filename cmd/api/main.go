@@ -12,12 +12,15 @@ import (
 	"github.com/Ayushmangit/social/internal/ratelimiter"
 	"github.com/Ayushmangit/social/internal/store"
 	"github.com/Ayushmangit/social/internal/store/cache"
+	ws "github.com/Ayushmangit/social/internal/websocket"
 	"github.com/go-redis/redis/v8"
 	"go.uber.org/zap"
 )
 
-const version = "1.1.9" // semver
-const TIMEFRAME_RATELIMITER = time.Second * 5
+const (
+	version               = "1.1.9" // semver
+	TIMEFRAME_RATELIMITER = time.Second * 5
+)
 
 //	@title			GopherSocial API
 //	@description	API for GopherSocial , a social network for gophers
@@ -57,7 +60,7 @@ func main() {
 
 		env: env.GetString("ENV", "development"),
 		mail: mailConfig{
-			exp:       time.Hour * 24 * 3, //3 days
+			exp:       time.Hour * 24 * 3, // 3 days
 			fromEmail: env.GetString("FROM_EMAIL", ""),
 			sendGrid: sendGridConfig{
 				apiKey: env.GetString("SENDGRID_API_KEY", ""),
@@ -70,7 +73,7 @@ func main() {
 			},
 			token: tokenConfig{
 				secret: env.GetString("JWT_SECRET", "asdhpasdhfgljkdshfjashdf"),
-				exp:    time.Hour * 24 * 3, //3 days,
+				exp:    time.Hour * 24 * 3, // 3 days,
 				iss:    env.GetString("TOKEN_HOST", "Gophersocial"),
 				aud:    env.GetString("TOKEN_HOST", "Gophersocial"),
 			},
@@ -82,11 +85,11 @@ func main() {
 		},
 	}
 
-	//Logger
+	// Logger
 	logger := zap.Must(zap.NewProduction()).Sugar()
 	defer logger.Sync() // flushes any buffered logs entries
 
-	//Database
+	// Database
 	db, err := db.New(cfg.db.addr, cfg.db.maxOpenConns, cfg.db.maxIdleConns, cfg.db.maxIdleTime)
 	if err != nil {
 		logger.Fatal(err)
@@ -95,11 +98,11 @@ func main() {
 	logger.Info("database connection is established")
 
 	store := store.NewStorage(db)
-	//NOTE: mailer consume
+	// NOTE: mailer consume
 	mailer := mailer.NewSendGridMailer(cfg.mail.sendGrid.apiKey, cfg.mail.fromEmail)
 	jwtAuthenticator := auth.NewJWTAuthenticator(cfg.auth.token.secret, cfg.auth.token.aud, cfg.auth.token.iss)
 
-	//NOTE: REDIS
+	// NOTE: REDIS
 	var rdb *redis.Client
 	if cfg.redis.enabled {
 		rdb = cache.NewRedisClient(cfg.redis.addr, cfg.redis.pw, cfg.redis.db)
@@ -111,6 +114,9 @@ func main() {
 		cfg.ratelimiter.RequestPerTimeFrame,
 		cfg.ratelimiter.TimeFrame,
 	)
+
+	hub := ws.NewHub()
+
 	app := &application{
 		config:        cfg,
 		store:         store,
@@ -119,9 +125,10 @@ func main() {
 		mailer:        mailer,
 		authenticator: jwtAuthenticator,
 		rateLimiter:   rateLimiter,
+		hub:           hub,
 	}
 
-	//Metrics collected
+	// Metrics collected
 	expvar.NewString("version").Set(version)
 	expvar.Publish("database", expvar.Func(func() any {
 		return db.Stats()

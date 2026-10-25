@@ -15,6 +15,21 @@ definitions:
     required:
     - content
     type: object
+  cmd_api.CreateConversationPayload:
+    properties:
+      other_user_id:
+        type: integer
+    required:
+    - other_user_id
+    type: object
+  cmd_api.CreateMessagePayload:
+    properties:
+      content:
+        maxLength: 5000
+        type: string
+    required:
+    - content
+    type: object
   cmd_api.CreatePostPayload:
     properties:
       content:
@@ -90,6 +105,32 @@ definitions:
       user:
         $ref: '#/definitions/github_com_Ayushmangit_social_internal_store.User'
       user_id:
+        type: integer
+    type: object
+  github_com_Ayushmangit_social_internal_store.Conversation:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      other_user:
+        $ref: '#/definitions/github_com_Ayushmangit_social_internal_store.User'
+      updated_at:
+        type: string
+    type: object
+  github_com_Ayushmangit_social_internal_store.Message:
+    properties:
+      content:
+        type: string
+      conversation_id:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: integer
+      sender:
+        $ref: '#/definitions/github_com_Ayushmangit_social_internal_store.User'
+      sender_id:
         type: integer
     type: object
   github_com_Ayushmangit_social_internal_store.Post:
@@ -272,6 +313,148 @@ paths:
       summary: Registers a user
       tags:
       - authentication
+  /conversations/:
+    get:
+      description: Returns all direct conversations belonging to the authenticated
+        user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_Ayushmangit_social_internal_store.Conversation'
+            type: array
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Get the current user's conversations
+      tags:
+      - conversations
+    post:
+      consumes:
+      - application/json
+      description: Creates a direct conversation with another user, or returns the
+        existing conversation.
+      parameters:
+      - description: Conversation payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/cmd_api.CreateConversationPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Ayushmangit_social_internal_store.Conversation'
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Create or retrieve a direct conversation
+      tags:
+      - conversations
+  /conversations/{conversationID}/messages/:
+    get:
+      description: Returns paginated message history for a conversation the authenticated
+        user participates in.
+      parameters:
+      - description: Conversation ID
+        in: path
+        name: conversationID
+        required: true
+        type: integer
+      - description: Maximum messages to return (default 50, maximum 100)
+        in: query
+        name: limit
+        type: integer
+      - description: Return messages with IDs less than this ID
+        in: query
+        name: before_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_Ayushmangit_social_internal_store.Message'
+            type: array
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Get conversation messages
+      tags:
+      - conversations
+    post:
+      consumes:
+      - application/json
+      description: Persists a message in a conversation where the authenticated user
+        is a participant.
+      parameters:
+      - description: Conversation ID
+        in: path
+        name: conversationID
+        required: true
+        type: integer
+      - description: Message payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/cmd_api.CreateMessagePayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_Ayushmangit_social_internal_store.Message'
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Send a message
+      tags:
+      - conversations
   /health:
     get:
       consumes:
@@ -699,6 +882,56 @@ paths:
       summary: Search users
       tags:
       - users
+  /ws:
+    get:
+      description: Upgrades the HTTP connection to WebSocket using a short-lived,
+        single-use ticket obtained from POST /ws/ticket.
+      parameters:
+      - description: Single-use WebSocket ticket
+        in: query
+        name: ticket
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "101":
+          description: Switching Protocols
+          schema:
+            type: string
+        "401":
+          description: Invalid or expired ticket
+          schema: {}
+        "403":
+          description: Origin not allowed
+          schema: {}
+      summary: Establish a WebSocket connection
+      tags:
+      - messaging
+  /ws/ticket:
+    post:
+      description: Creates a short-lived, single-use ticket for an authenticated WebSocket
+        connection.
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: WebSocket ticket created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal server error
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Create a WebSocket ticket
+      tags:
+      - messaging
 securityDefinitions:
   ApiKeyAuth:
     in: header

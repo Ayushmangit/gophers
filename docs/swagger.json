@@ -140,6 +140,216 @@
                 }
             }
         },
+        "/conversations/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Returns all direct conversations belonging to the authenticated user.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "conversations"
+                ],
+                "summary": "Get the current user's conversations",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_Ayushmangit_social_internal_store.Conversation"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Creates a direct conversation with another user, or returns the existing conversation.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "conversations"
+                ],
+                "summary": "Create or retrieve a direct conversation",
+                "parameters": [
+                    {
+                        "description": "Conversation payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/cmd_api.CreateConversationPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Ayushmangit_social_internal_store.Conversation"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/conversations/{conversationID}/messages/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Returns paginated message history for a conversation the authenticated user participates in.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "conversations"
+                ],
+                "summary": "Get conversation messages",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Conversation ID",
+                        "name": "conversationID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Maximum messages to return (default 50, maximum 100)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Return messages with IDs less than this ID",
+                        "name": "before_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_Ayushmangit_social_internal_store.Message"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Persists a message in a conversation where the authenticated user is a participant.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "conversations"
+                ],
+                "summary": "Send a message",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Conversation ID",
+                        "name": "conversationID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Message payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/cmd_api.CreateMessagePayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Ayushmangit_social_internal_store.Message"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/health": {
             "get": {
                 "security": [
@@ -793,6 +1003,79 @@
                     }
                 }
             }
+        },
+        "/ws": {
+            "get": {
+                "description": "Upgrades the HTTP connection to WebSocket using a short-lived, single-use ticket obtained from POST /ws/ticket.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "messaging"
+                ],
+                "summary": "Establish a WebSocket connection",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Single-use WebSocket ticket",
+                        "name": "ticket",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "101": {
+                        "description": "Switching Protocols",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired ticket",
+                        "schema": {}
+                    },
+                    "403": {
+                        "description": "Origin not allowed",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/ws/ticket": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Creates a short-lived, single-use ticket for an authenticated WebSocket connection.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "messaging"
+                ],
+                "summary": "Create a WebSocket ticket",
+                "responses": {
+                    "201": {
+                        "description": "WebSocket ticket created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {}
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -816,6 +1099,29 @@
                 "content": {
                     "type": "string",
                     "maxLength": 1000
+                }
+            }
+        },
+        "cmd_api.CreateConversationPayload": {
+            "type": "object",
+            "required": [
+                "other_user_id"
+            ],
+            "properties": {
+                "other_user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "cmd_api.CreateMessagePayload": {
+            "type": "object",
+            "required": [
+                "content"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "maxLength": 5000
                 }
             }
         },
@@ -926,6 +1232,46 @@
                     "$ref": "#/definitions/github_com_Ayushmangit_social_internal_store.User"
                 },
                 "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_Ayushmangit_social_internal_store.Conversation": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "other_user": {
+                    "$ref": "#/definitions/github_com_Ayushmangit_social_internal_store.User"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_Ayushmangit_social_internal_store.Message": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "conversation_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "sender": {
+                    "$ref": "#/definitions/github_com_Ayushmangit_social_internal_store.User"
+                },
+                "sender_id": {
                     "type": "integer"
                 }
             }
