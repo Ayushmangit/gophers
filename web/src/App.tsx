@@ -1,59 +1,45 @@
-import { BrowserRouter, Route, Routes } from "react-router"
+import { BrowserRouter, Route, Routes } from "react-router";
 
-import ProtectedRoute from "./components/ProtectedRoutes/ProtectedRoutes"
-import Home from "./components/Home/Home"
+import ProtectedRoute from "./components/ProtectedRoutes/ProtectedRoutes";
+import Home from "./components/Home/Home";
 
-import PublicPage from "./app/pages/PublicPage"
-import RegisterUser from "./app/pages/Register"
-import ActivateUserPage from "./app/pages/ActivateUser"
-import Login from "./app/pages/Login"
+import PublicPage from "./app/pages/PublicPage";
+import RegisterUser from "./app/pages/Register";
+import ActivateUserPage from "./app/pages/ActivateUser";
+import Login from "./app/pages/Login";
 
-import CreatePost from "./app/pages/CreatePost"
-import PostDetails from "./app/pages/PostDetails"
-import Profile from "./app/pages/Profile"
-import { useEffect } from "react"
-import { useAppDispatch } from "./app/hooks"
-import { me } from "./app/features/auth/authThunk"
-import RegisterSuccess from "./app/pages/Register-success"
-import Explore from "./app/pages/Explore"
+import CreatePost from "./app/pages/CreatePost";
+import PostDetails from "./app/pages/PostDetails";
+import Profile from "./app/pages/Profile";
+import { useEffect } from "react";
+import { useAppDispatch } from "./app/hooks";
+import { me } from "./app/features/auth/authThunk";
+import RegisterSuccess from "./app/pages/Register-success";
+import Explore from "./app/pages/Explore";
+import Messages from "./app/pages/Messages";
 
 function App() {
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   useEffect(() => {
-    const token = localStorage.getItem("access_token")
+    const token = localStorage.getItem("access_token");
 
     if (token) {
-      dispatch(me())
+      dispatch(me());
     }
-  }, [dispatch])
+  }, [dispatch]);
   return (
     <BrowserRouter>
       <Routes>
         {/* Public */}
 
-        <Route
-          path="/"
-          element={<PublicPage />}
-        />
+        <Route path="/" element={<PublicPage />} />
 
-        <Route
-          path="/register"
-          element={<RegisterUser />}
-        />
+        <Route path="/register" element={<RegisterUser />} />
 
-        <Route
-          path="/login"
-          element={<Login />}
-        />
+        <Route path="/login" element={<Login />} />
 
-        <Route
-          path="/activate/:token"
-          element={<ActivateUserPage />}
-        />
-        <Route
-          path="/register-success"
-          element={<RegisterSuccess />} />
-
+        <Route path="/activate/:token" element={<ActivateUserPage />} />
+        <Route path="/register-success" element={<RegisterSuccess />} />
 
         {/* Protected */}
 
@@ -73,7 +59,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
 
         <Route
           path="/posts/create"
@@ -101,9 +86,17 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/messages"
+          element={
+            <ProtectedRoute>
+              <Messages />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
