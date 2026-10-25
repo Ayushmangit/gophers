@@ -21,7 +21,7 @@ func WriteJson(w http.ResponseWriter, status int, data any) error {
 }
 
 func ReadJson(w http.ResponseWriter, r *http.Request, data any) error {
-	maxBytes := 1_048_578 //1 MB
+	maxBytes := 1_048_578 // 1 MB
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
 
 	decoder := json.NewDecoder(r.Body)

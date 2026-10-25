@@ -21,25 +21,25 @@ const (
 func (app *application) BasicAuthMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			//read the auth header
+			// read the auth header
 			authHeader := r.Header.Get("Authorization")
 			if authHeader == "" {
 				app.UnAuthorizedBasicError(w, r, fmt.Errorf("authorization header is missing"))
 				return
 			}
-			//parse it -> base64
+			// parse it -> base64
 			parts := strings.Split(authHeader, " ")
 			if len(parts) != 2 || parts[0] != BASIC {
 				app.UnAuthorizedBasicError(w, r, fmt.Errorf("authorization header is malformed"))
 				return
 			}
-			//decode
+			// decode
 			decoded, err := base64.StdEncoding.DecodeString(parts[1])
 			if err != nil {
 				app.UnAuthorizedBasicError(w, r, err)
 				return
 			}
-			//check the credentials
+			// check the credentials
 			username := app.config.auth.basic.user
 			password := app.config.auth.basic.password
 			creds := strings.SplitN(string(decoded), ":", 2)
@@ -50,13 +50,11 @@ func (app *application) BasicAuthMiddleware() func(http.Handler) http.Handler {
 
 			next.ServeHTTP(w, r)
 		})
-
 	}
 }
 
 func (app *application) AuthTokenMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 		authHeader := r.Header.Get("Authorization")
 
 		if authHeader == "" {
@@ -107,7 +105,7 @@ func (app *application) AuthTokenMiddleware(next http.Handler) http.Handler {
 
 func (app *application) checkPostOwnership(requiredRole string, next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		//if it is the users post
+		// if it is the users post
 		user := getUserFromCtx(r)
 		post := getPostFromCtx(r)
 
